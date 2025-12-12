@@ -1,4 +1,4 @@
-from data_generator.Generator import *
+from generator.Generator import *
 from enviroments.MAPF_env import *
 from model.architecture_1 import *
 
@@ -15,8 +15,8 @@ if __name__ == "__main__":
     n_agents = 10
     obstacle_ratio = 0.2
 
-    n_instances_pool = 5000
-    n_episodes = 5000
+    n_instances_pool = 1000
+    n_episodes = 1000
 
     seed = 42
 

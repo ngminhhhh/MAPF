@@ -6,7 +6,7 @@ CELL_SIZE = 50
 MARGIN = 50
 INFO_PANEL_HEIGHT = 70
 
-BG_COLOR = (240, 240, 240)
+BG_COLOR = (0, 0, 0)
 GRID_COLOR = (120, 120, 120)     
 OBSTACLE_COLOR = (60, 60, 60)
 
@@ -14,15 +14,13 @@ AGENT_COLOR = (220, 0, 0)
 AGENT_BORDER_COLOR = (0, 0, 0)
 GOAL_TEXT_COLOR = (0, 0, 200)
 PATH_COLOR = (0, 150, 255)
-TEXT_COLOR = (0, 0, 0)
+TEXT_COLOR = (255, 255, 255)
 
 FONT_NAME = "ubuntu"
-
 
 def load_json(path):
     with open(path, "r") as f:
         return json.load(f)
-
 
 def get_agent_position(paths, agent_idx, t):
     path = paths[agent_idx]
@@ -31,13 +29,7 @@ def get_agent_position(paths, agent_idx, t):
     else:
         return path[-1]
 
-
-def visualize(instance_path="./data/10x10-10/train/instance_0.json",
-         solution_path="./data/10x10-10/train-solution/solution_0.json"):
-
-    instance = load_json(instance_path)
-    solution = load_json(solution_path)
-
+def visualize(instance, solution):
     height = instance["height"]
     width = instance["width"]
     grid = instance["grid"]
@@ -97,7 +89,6 @@ def visualize(instance_path="./data/10x10-10/train/instance_0.json",
                 else:
                     hovered_agent = None
 
-        # Vẽ nền
         screen.fill(BG_COLOR)
 
         t_text = font.render(
@@ -106,7 +97,6 @@ def visualize(instance_path="./data/10x10-10/train/instance_0.json",
         t_text_y = max(10, MARGIN - 30)
         screen.blit(t_text, (MARGIN, t_text_y))
 
-        # Vẽ grid + obstacle
         for r in range(height):
             for c in range(width):
                 x = MARGIN + c * CELL_SIZE
@@ -119,10 +109,8 @@ def visualize(instance_path="./data/10x10-10/train/instance_0.json",
                 else:
                     pygame.draw.rect(screen, (255, 255, 255), rect)
 
-                # Viền grid đậm hơn, nét 2px
                 pygame.draw.rect(screen, GRID_COLOR, rect, 2)
 
-        # Vẽ goals và đánh số theo index agent
         for i, goal in enumerate(goals):
             gr, gc = goal  # [row, col]
             gx = MARGIN + gc * CELL_SIZE

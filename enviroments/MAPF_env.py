@@ -1,6 +1,6 @@
 import gymnasium as gym
 from gymnasium import spaces
-from data_generator.Generator import *
+from generator.Generator import *
 from typing import Callable, Tuple
 from model.A_star import A_star
 
