@@ -1,0 +1,354 @@
+Solving CBS instances:   0%|▌                                                                                                                  | 5/1000 [00:04<15:41,  1.06it/s]
+Instance 7: no solution (timeout or unsolvable)
+Solving CBS instances:   1%|▉                                                                                                                  | 8/1000 [00:14<36:48,  2.23s/it] 
+Instance 8: no solution (timeout or unsolvable)
+Solving CBS instances:   1%|█                                                                                                                | 9/1000 [00:24<1:02:51,  3.81s/it] 
+Instance 9: no solution (timeout or unsolvable)
+Solving CBS instances:   1%|█                                                                                                               | 10/1000 [00:34<1:25:55,  5.21s/it] 
+Instance 11: no solution (timeout or unsolvable)
+Solving CBS instances:   1%|█▌                                                                                                                | 14/1000 [00:46<56:33,  3.44s/it] 
+Instance 15: no solution (timeout or unsolvable)
+Solving CBS instances:   2%|█▉                                                                                                                | 17/1000 [00:57<55:46,  3.40s/it] 
+Instance 17: no solution (timeout or unsolvable)
+Solving CBS instances:   2%|██                                                                                                              | 18/1000 [01:07<1:22:13,  5.02s/it] 
+Instance 20: no solution (timeout or unsolvable)
+Solving CBS instances:   2%|██▎                                                                                                             | 21/1000 [01:18<1:08:26,  4.19s/it] 
+Instance 21: no solution (timeout or unsolvable)
+Solving CBS instances:   2%|██▌                                                                                                             | 23/1000 [01:28<1:08:37,  4.21s/it] 
+Instance 23: no solution (timeout or unsolvable)
+Solving CBS instances:   3%|███▉                                                                                                              | 34/1000 [01:46<17:41,  1.10s/it] 
+Instance 36: no solution (timeout or unsolvable)
+Solving CBS instances:   4%|████▌                                                                                                             | 40/1000 [01:56<20:21,  1.27s/it] 
+Instance 43: no solution (timeout or unsolvable)
+Solving CBS instances:   4%|█████▏                                                                                                            | 45/1000 [02:07<26:25,  1.66s/it] 
+Instance 45: no solution (timeout or unsolvable)
+Solving CBS instances:   5%|█████▏                                                                                                            | 46/1000 [02:17<50:30,  3.18s/it] 
+Instance 47: no solution (timeout or unsolvable)
+Solving CBS instances:   5%|██████                                                                                                            | 53/1000 [02:30<26:49,  1.70s/it] 
+Instance 54: no solution (timeout or unsolvable)
+Solving CBS instances:   6%|██████▎                                                                                                           | 55/1000 [02:40<41:24,  2.63s/it] 
+Instance 56: no solution (timeout or unsolvable)
+Solving CBS instances:   8%|████████▋                                                                                                         | 76/1000 [03:05<17:02,  1.11s/it] 
+Instance 76: no solution (timeout or unsolvable)
+Solving CBS instances:   8%|█████████                                                                                                         | 79/1000 [03:16<30:04,  1.96s/it] 
+Instance 80: no solution (timeout or unsolvable)
+Solving CBS instances:   8%|█████████▏                                                                                                        | 81/1000 [03:26<45:21,  2.96s/it] 
+Instance 81: no solution (timeout or unsolvable)
+Solving CBS instances:   8%|█████████▏                                                                                                      | 82/1000 [03:36<1:05:49,  4.30s/it] 
+Instance 82: no solution (timeout or unsolvable)
+Solving CBS instances:   9%|█████████▉                                                                                                        | 87/1000 [03:46<38:33,  2.53s/it] 
+Instance 87: no solution (timeout or unsolvable)
+Solving CBS instances:   9%|██████████                                                                                                        | 88/1000 [03:56<57:10,  3.76s/it] 
+Instance 89: no solution (timeout or unsolvable)
+Solving CBS instances:  10%|███████████▎                                                                                                     | 100/1000 [04:08<15:30,  1.03s/it] 
+Instance 101: no solution (timeout or unsolvable)
+Solving CBS instances:  10%|███████████▋                                                                                                     | 103/1000 [04:19<28:19,  1.89s/it] 
+Instance 104: no solution (timeout or unsolvable)
+Solving CBS instances:  11%|████████████                                                                                                     | 107/1000 [04:30<29:57,  2.01s/it] 
+Instance 110: no solution (timeout or unsolvable)
+Solving CBS instances:  11%|████████████▌                                                                                                    | 111/1000 [04:40<33:23,  2.25s/it] 
+Instance 111: no solution (timeout or unsolvable)
+Solving CBS instances:  13%|██████████████▍                                                                                                  | 128/1000 [04:51<08:25,  1.72it/s] 
+Instance 131: no solution (timeout or unsolvable)
+Solving CBS instances:  14%|███████████████▎                                                                                                 | 135/1000 [05:05<17:10,  1.19s/it] 
+Instance 135: no solution (timeout or unsolvable)
+Solving CBS instances:  14%|████████████████▏                                                                                                | 143/1000 [05:20<17:23,  1.22s/it] 
+Instance 143: no solution (timeout or unsolvable)
+Solving CBS instances:  15%|████████████████▌                                                                                                | 147/1000 [05:33<25:25,  1.79s/it] 
+Instance 147: no solution (timeout or unsolvable)
+Solving CBS instances:  15%|█████████████████▏                                                                                               | 152/1000 [05:43<22:23,  1.58s/it] 
+Instance 152: no solution (timeout or unsolvable)
+Solving CBS instances:  16%|██████████████████▏                                                                                              | 161/1000 [06:00<16:58,  1.21s/it] 
+Instance 163: no solution (timeout or unsolvable)
+Solving CBS instances:  17%|██████████████████▊                                                                                              | 166/1000 [06:13<26:37,  1.92s/it] 
+Instance 168: no solution (timeout or unsolvable)
+Solving CBS instances:  18%|███████████████████▉                                                                                             | 176/1000 [06:26<12:22,  1.11it/s] 
+Instance 177: no solution (timeout or unsolvable)
+Solving CBS instances:  18%|████████████████████                                                                                             | 178/1000 [06:36<34:13,  2.50s/it] 
+Instance 178: no solution (timeout or unsolvable)
+Solving CBS instances:  19%|█████████████████████▏                                                                                           | 187/1000 [06:53<14:52,  1.10s/it] 
+Instance 187: no solution (timeout or unsolvable)
+Solving CBS instances:  19%|█████████████████████▌                                                                                           | 191/1000 [07:03<21:44,  1.61s/it] 
+Instance 192: no solution (timeout or unsolvable)
+Solving CBS instances:  20%|██████████████████████                                                                                           | 195/1000 [07:18<34:09,  2.55s/it] 
+Instance 196: no solution (timeout or unsolvable)
+Solving CBS instances:  22%|█████████████████████████▏                                                                                       | 223/1000 [07:39<11:59,  1.08it/s] 
+Instance 223: no solution (timeout or unsolvable)
+Solving CBS instances:  22%|█████████████████████████▍                                                                                       | 225/1000 [07:51<30:24,  2.35s/it] 
+Instance 225: no solution (timeout or unsolvable)
+Solving CBS instances:  23%|█████████████████████████▉                                                                                       | 230/1000 [08:02<20:46,  1.62s/it] 
+Instance 231: no solution (timeout or unsolvable)
+Solving CBS instances:  24%|███████████████████████████▎                                                                                     | 242/1000 [08:14<08:54,  1.42it/s] 
+Instance 242: no solution (timeout or unsolvable)
+Solving CBS instances:  24%|███████████████████████████▌                                                                                     | 244/1000 [08:24<21:17,  1.69s/it]
+Instance 246: no solution (timeout or unsolvable)
+Solving CBS instances:  25%|████████████████████████████▎                                                                                    | 251/1000 [08:38<20:34,  1.65s/it] 
+Instance 251: no solution (timeout or unsolvable)
+Solving CBS instances:  25%|████████████████████████████▌                                                                                    | 253/1000 [08:49<33:05,  2.66s/it] 
+Instance 253: no solution (timeout or unsolvable)
+Solving CBS instances:  26%|█████████████████████████████                                                                                    | 257/1000 [08:59<27:23,  2.21s/it] 
+Instance 257: no solution (timeout or unsolvable)
+Solving CBS instances:  26%|█████████████████████████████▋                                                                                   | 263/1000 [09:10<16:00,  1.30s/it] 
+Instance 264: no solution (timeout or unsolvable)
+Solving CBS instances:  26%|█████████████████████████████▉                                                                                   | 265/1000 [09:20<32:59,  2.69s/it] 
+Instance 267: no solution (timeout or unsolvable)
+Solving CBS instances:  27%|██████████████████████████████▌                                                                                  | 270/1000 [09:32<29:06,  2.39s/it] 
+Instance 270: no solution (timeout or unsolvable)
+Solving CBS instances:  28%|███████████████████████████████▉                                                                                 | 283/1000 [09:53<10:47,  1.11it/s] 
+Instance 283: no solution (timeout or unsolvable)
+Solving CBS instances:  29%|████████████████████████████████▎                                                                                | 286/1000 [10:03<21:04,  1.77s/it]
+Instance 286: no solution (timeout or unsolvable)
+Solving CBS instances:  29%|████████████████████████████████▍                                                                                | 287/1000 [10:13<40:25,  3.40s/it] 
+Instance 288: no solution (timeout or unsolvable)
+Solving CBS instances:  29%|████████████████████████████████▋                                                                                | 289/1000 [10:23<47:11,  3.98s/it] 
+Instance 291: no solution (timeout or unsolvable)
+Solving CBS instances:  29%|█████████████████████████████████                                                                                | 293/1000 [10:43<55:53,  4.74s/it] 
+Instance 294: no solution (timeout or unsolvable)
+Solving CBS instances:  31%|██████████████████████████████████▋                                                                              | 307/1000 [10:57<07:48,  1.48it/s] 
+Instance 308: no solution (timeout or unsolvable)
+Solving CBS instances:  31%|███████████████████████████████████▎                                                                             | 312/1000 [11:09<14:50,  1.29s/it] 
+Instance 313: no solution (timeout or unsolvable)
+Solving CBS instances:  31%|███████████████████████████████████▍                                                                             | 314/1000 [11:19<28:17,  2.48s/it] 
+Instance 314: no solution (timeout or unsolvable)
+Solving CBS instances:  32%|████████████████████████████████████▏                                                                            | 320/1000 [11:50<43:30,  3.84s/it] 
+Instance 321: no solution (timeout or unsolvable)
+Solving CBS instances:  33%|████████████████████████████████████▊                                                                            | 326/1000 [12:03<27:58,  2.49s/it] 
+Instance 326: no solution (timeout or unsolvable)
+Solving CBS instances:  33%|█████████████████████████████████████▍                                                                           | 331/1000 [12:23<36:57,  3.31s/it] 
+Instance 332: no solution (timeout or unsolvable)
+Solving CBS instances:  34%|██████████████████████████████████████▏                                                                          | 338/1000 [12:33<17:30,  1.59s/it] 
+Instance 340: no solution (timeout or unsolvable)
+Solving CBS instances:  34%|██████████████████████████████████████▊                                                                          | 343/1000 [12:50<27:43,  2.53s/it] 
+Instance 343: no solution (timeout or unsolvable)
+Solving CBS instances:  35%|███████████████████████████████████████                                                                          | 346/1000 [13:01<30:57,  2.84s/it] 
+Instance 346: no solution (timeout or unsolvable)
+Solving CBS instances:  35%|███████████████████████████████████████▏                                                                         | 347/1000 [13:11<45:21,  4.17s/it] 
+Instance 347: no solution (timeout or unsolvable)
+Solving CBS instances:  35%|███████████████████████████████████████▌                                                                         | 350/1000 [13:22<34:50,  3.22s/it] 
+Instance 350: no solution (timeout or unsolvable)
+Solving CBS instances:  35%|████████████████████████████████████████                                                                         | 354/1000 [13:32<25:49,  2.40s/it] 
+Instance 356: no solution (timeout or unsolvable)
+Solving CBS instances:  36%|█████████████████████████████████████████                                                                        | 363/1000 [13:54<19:38,  1.85s/it] 
+Instance 368: no solution (timeout or unsolvable)
+Solving CBS instances:  37%|█████████████████████████████████████████▋                                                                       | 369/1000 [14:04<18:20,  1.74s/it] 
+Instance 369: no solution (timeout or unsolvable)
+Solving CBS instances:  37%|█████████████████████████████████████████▊                                                                       | 370/1000 [14:15<30:08,  2.87s/it] 
+Instance 372: no solution (timeout or unsolvable)
+Solving CBS instances:  38%|██████████████████████████████████████████▍                                                                      | 376/1000 [14:33<32:46,  3.15s/it] 
+Instance 377: no solution (timeout or unsolvable)
+Solving CBS instances:  38%|██████████████████████████████████████████▊                                                                      | 379/1000 [14:43<31:53,  3.08s/it] 
+Instance 380: no solution (timeout or unsolvable)
+Solving CBS instances:  38%|███████████████████████████████████████████                                                                      | 381/1000 [14:53<38:40,  3.75s/it] 
+Instance 381: no solution (timeout or unsolvable)
+Solving CBS instances:  39%|████████████████████████████████████████████▎                                                                    | 392/1000 [15:08<14:48,  1.46s/it] 
+Instance 392: no solution (timeout or unsolvable)
+Solving CBS instances:  40%|█████████████████████████████████████████████                                                                    | 399/1000 [15:23<13:09,  1.31s/it] 
+Instance 399: no solution (timeout or unsolvable)
+Solving CBS instances:  40%|█████████████████████████████████████████████▏                                                                   | 400/1000 [15:33<27:51,  2.79s/it] 
+Instance 400: no solution (timeout or unsolvable)
+Solving CBS instances:  40%|█████████████████████████████████████████████▋                                                                   | 404/1000 [15:48<29:53,  3.01s/it] 
+Instance 408: no solution (timeout or unsolvable)
+Solving CBS instances:  41%|██████████████████████████████████████████████▊                                                                  | 414/1000 [15:58<14:05,  1.44s/it] 
+Instance 415: no solution (timeout or unsolvable)
+Solving CBS instances:  42%|███████████████████████████████████████████████                                                                  | 416/1000 [16:08<20:53,  2.15s/it] 
+Instance 419: no solution (timeout or unsolvable)
+Solving CBS instances:  42%|███████████████████████████████████████████████▉                                                                 | 424/1000 [16:29<24:32,  2.56s/it] 
+Instance 425: no solution (timeout or unsolvable)
+Solving CBS instances:  43%|████████████████████████████████████████████████▍                                                                | 429/1000 [16:39<20:17,  2.13s/it] 
+Instance 430: no solution (timeout or unsolvable)
+Solving CBS instances:  44%|█████████████████████████████████████████████████▏                                                               | 435/1000 [16:54<18:06,  1.92s/it] 
+Instance 438: no solution (timeout or unsolvable)
+Solving CBS instances:  44%|█████████████████████████████████████████████████▊                                                               | 441/1000 [17:04<15:50,  1.70s/it] 
+Instance 445: no solution (timeout or unsolvable)
+Solving CBS instances:  46%|███████████████████████████████████████████████████▍                                                             | 455/1000 [17:23<11:35,  1.28s/it] 
+Instance 455: no solution (timeout or unsolvable)
+Solving CBS instances:  46%|████████████████████████████████████████████████████                                                             | 461/1000 [17:33<11:22,  1.27s/it]
+Instance 462: no solution (timeout or unsolvable)
+Solving CBS instances:  47%|█████████████████████████████████████████████████████▍                                                           | 473/1000 [17:49<06:24,  1.37it/s] 
+Instance 473: no solution (timeout or unsolvable)
+Solving CBS instances:  48%|██████████████████████████████████████████████████████▍                                                          | 482/1000 [18:12<05:57,  1.45it/s] 
+Instance 483: no solution (timeout or unsolvable)
+Solving CBS instances:  48%|██████████████████████████████████████████████████████▋                                                          | 484/1000 [18:12<16:58,  1.97s/it] 
+Instance 484: no solution (timeout or unsolvable)
+Solving CBS instances:  48%|██████████████████████████████████████████████████████▊                                                          | 485/1000 [18:22<26:25,  3.08s/it] 
+Instance 485: no solution (timeout or unsolvable)
+Solving CBS instances:  50%|███████████████████████████████████████████████████████▉                                                         | 495/1000 [18:38<11:33,  1.37s/it] 
+Instance 495: no solution (timeout or unsolvable)
+Solving CBS instances:  50%|████████████████████████████████████████████████████████▊                                                        | 503/1000 [18:50<08:53,  1.07s/it] 
+Instance 503: no solution (timeout or unsolvable)
+Solving CBS instances:  51%|█████████████████████████████████████████████████████████▊                                                       | 512/1000 [19:05<07:05,  1.15it/s] 
+Instance 512: no solution (timeout or unsolvable)
+Solving CBS instances:  51%|█████████████████████████████████████████████████████████▉                                                       | 513/1000 [19:15<22:35,  2.78s/it] 
+Instance 513: no solution (timeout or unsolvable)
+Solving CBS instances:  51%|██████████████████████████████████████████████████████████                                                       | 514/1000 [19:25<36:00,  4.45s/it] 
+Instance 514: no solution (timeout or unsolvable)
+Solving CBS instances:  52%|██████████████████████████████████████████████████████████▏                                                      | 515/1000 [19:35<47:05,  5.83s/it] 
+Instance 516: no solution (timeout or unsolvable)
+Solving CBS instances:  52%|██████████████████████████████████████████████████████████▌                                                      | 518/1000 [19:46<34:28,  4.29s/it] 
+Instance 519: no solution (timeout or unsolvable)
+Solving CBS instances:  53%|███████████████████████████████████████████████████████████▌                                                     | 527/1000 [20:12<27:54,  3.54s/it] 
+Instance 528: no solution (timeout or unsolvable)
+Solving CBS instances:  53%|███████████████████████████████████████████████████████████▊                                                     | 529/1000 [20:22<32:23,  4.13s/it] 
+Instance 529: no solution (timeout or unsolvable)
+Solving CBS instances:  54%|█████████████████████████████████████████████████████████████▎                                                   | 543/1000 [20:35<05:07,  1.49it/s] 
+Instance 545: no solution (timeout or unsolvable)
+Solving CBS instances:  55%|██████████████████████████████████████████████████████████████▏                                                  | 550/1000 [20:45<07:30,  1.00s/it]
+Instance 552: no solution (timeout or unsolvable)
+Solving CBS instances:  55%|██████████████████████████████████████████████████████████████▍                                                  | 553/1000 [20:55<12:47,  1.72s/it] 
+Instance 553: no solution (timeout or unsolvable)
+Solving CBS instances:  56%|██████████████████████████████████████████████████████████████▊                                                  | 556/1000 [21:08<17:39,  2.39s/it] 
+Instance 556: no solution (timeout or unsolvable)
+Solving CBS instances:  56%|███████████████████████████████████████████████████████████████▋                                                 | 564/1000 [21:20<07:12,  1.01it/s] 
+Instance 565: no solution (timeout or unsolvable)
+Solving CBS instances:  57%|████████████████████████████████████████████████████████████████                                                 | 567/1000 [21:30<13:24,  1.86s/it] 
+Instance 569: no solution (timeout or unsolvable)
+Solving CBS instances:  57%|████████████████████████████████████████████████████████████████▊                                                | 574/1000 [21:44<11:08,  1.57s/it] 
+Instance 574: no solution (timeout or unsolvable)
+Solving CBS instances:  58%|██████████████████████████████████████████████████████████████████                                               | 585/1000 [21:56<05:07,  1.35it/s] 
+Instance 587: no solution (timeout or unsolvable)
+Solving CBS instances:  59%|██████████████████████████████████████████████████████████████████▉                                              | 592/1000 [22:09<09:34,  1.41s/it] 
+Instance 594: no solution (timeout or unsolvable)
+Solving CBS instances:  60%|███████████████████████████████████████████████████████████████████▏                                             | 595/1000 [22:19<15:05,  2.23s/it] 
+Instance 595: no solution (timeout or unsolvable)
+Solving CBS instances:  60%|███████████████████████████████████████████████████████████████████▊                                             | 600/1000 [22:34<14:23,  2.16s/it] 
+Instance 600: no solution (timeout or unsolvable)
+Solving CBS instances:  60%|███████████████████████████████████████████████████████████████████▉                                             | 601/1000 [22:44<25:36,  3.85s/it] 
+Instance 601: no solution (timeout or unsolvable)
+Solving CBS instances:  60%|████████████████████████████████████████████████████████████████████                                             | 602/1000 [22:55<35:10,  5.30s/it] 
+Instance 602: no solution (timeout or unsolvable)
+Solving CBS instances:  61%|████████████████████████████████████████████████████████████████████▉                                            | 610/1000 [23:06<10:59,  1.69s/it] 
+Instance 610: no solution (timeout or unsolvable)
+Solving CBS instances:  63%|██████████████████████████████████████████████████████████████████████▉                                          | 628/1000 [23:19<02:21,  2.63it/s] 
+Instance 629: no solution (timeout or unsolvable)
+Solving CBS instances:  63%|███████████████████████████████████████████████████████████████████████▏                                         | 630/1000 [23:29<10:23,  1.69s/it] 
+Instance 637: no solution (timeout or unsolvable)
+Solving CBS instances:  64%|████████████████████████████████████████████████████████████████████████▍                                        | 641/1000 [23:52<13:53,  2.32s/it] 
+Instance 644: no solution (timeout or unsolvable)
+Solving CBS instances:  65%|█████████████████████████████████████████████████████████████████████████                                        | 647/1000 [24:03<11:10,  1.90s/it] 
+Instance 647: no solution (timeout or unsolvable)
+Solving CBS instances:  65%|█████████████████████████████████████████████████████████████████████████▌                                       | 651/1000 [24:14<11:35,  1.99s/it] 
+Instance 651: no solution (timeout or unsolvable)
+Solving CBS instances:  66%|██████████████████████████████████████████████████████████████████████████▏                                      | 657/1000 [24:24<07:35,  1.33s/it] 
+Instance 657: no solution (timeout or unsolvable)
+Solving CBS instances:  67%|███████████████████████████████████████████████████████████████████████████▌                                     | 669/1000 [24:50<08:02,  1.46s/it]
+Instance 669: no solution (timeout or unsolvable)
+Solving CBS instances:  67%|███████████████████████████████████████████████████████████████████████████▋                                     | 670/1000 [25:00<18:31,  3.37s/it] 
+Instance 672: no solution (timeout or unsolvable)
+Solving CBS instances:  68%|████████████████████████████████████████████████████████████████████████████▍                                    | 676/1000 [25:11<10:15,  1.90s/it] 
+Instance 677: no solution (timeout or unsolvable)
+Solving CBS instances:  68%|████████████████████████████████████████████████████████████████████████████▌                                    | 678/1000 [25:21<15:48,  2.95s/it] 
+Instance 678: no solution (timeout or unsolvable)
+Solving CBS instances:  68%|████████████████████████████████████████████████████████████████████████████▉                                    | 681/1000 [25:31<14:05,  2.65s/it] 
+Instance 681: no solution (timeout or unsolvable)
+Solving CBS instances:  69%|██████████████████████████████████████████████████████████████████████████████                                   | 691/1000 [25:50<10:07,  1.97s/it] 
+Instance 691: no solution (timeout or unsolvable)
+Solving CBS instances:  70%|██████████████████████████████████████████████████████████████████████████████▊                                  | 697/1000 [26:07<10:19,  2.05s/it] 
+Instance 697: no solution (timeout or unsolvable)
+Solving CBS instances:  70%|███████████████████████████████████████████████████████████████████████████████▏                                 | 701/1000 [26:24<15:08,  3.04s/it] 
+Instance 703: no solution (timeout or unsolvable)
+Solving CBS instances:  70%|███████████████████████████████████████████████████████████████████████████████▋                                 | 705/1000 [26:40<18:34,  3.78s/it] 
+Instance 705: no solution (timeout or unsolvable)
+Solving CBS instances:  71%|███████████████████████████████████████████████████████████████████████████████▊                                 | 706/1000 [26:50<24:59,  5.10s/it]
+Instance 706: no solution (timeout or unsolvable)
+Solving CBS instances:  71%|████████████████████████████████████████████████████████████████████████████████                                 | 708/1000 [27:01<24:09,  4.96s/it] 
+Instance 708: no solution (timeout or unsolvable)
+Solving CBS instances:  72%|█████████████████████████████████████████████████████████████████████████████████                                | 717/1000 [27:30<19:20,  4.10s/it] 
+Instance 717: no solution (timeout or unsolvable)
+Solving CBS instances:  72%|█████████████████████████████████████████████████████████████████████████████████▏                               | 718/1000 [27:40<26:01,  5.54s/it] 
+Instance 718: no solution (timeout or unsolvable)
+Solving CBS instances:  72%|█████████████████████████████████████████████████████████████████████████████████▏                               | 719/1000 [27:50<31:23,  6.70s/it] 
+Instance 719: no solution (timeout or unsolvable)
+Solving CBS instances:  72%|█████████████████████████████████████████████████████████████████████████████████▎                               | 720/1000 [28:00<35:26,  7.59s/it] 
+Instance 720: no solution (timeout or unsolvable)
+Solving CBS instances:  73%|██████████████████████████████████████████████████████████████████████████████████▍                              | 729/1000 [28:12<05:45,  1.28s/it] 
+Instance 729: no solution (timeout or unsolvable)
+Solving CBS instances:  73%|██████████████████████████████████████████████████████████████████████████████████▋                              | 732/1000 [28:23<09:06,  2.04s/it] 
+Instance 732: no solution (timeout or unsolvable)
+Solving CBS instances:  74%|███████████████████████████████████████████████████████████████████████████████████▎                             | 737/1000 [28:34<06:03,  1.38s/it] 
+Instance 737: no solution (timeout or unsolvable)
+Solving CBS instances:  74%|███████████████████████████████████████████████████████████████████████████████████▋                             | 741/1000 [28:47<09:20,  2.16s/it] 
+Instance 745: no solution (timeout or unsolvable)
+Solving CBS instances:  75%|████████████████████████████████████████████████████████████████████████████████████▎                            | 746/1000 [28:57<08:47,  2.08s/it] 
+Instance 746: no solution (timeout or unsolvable)
+Solving CBS instances:  75%|████████████████████████████████████████████████████████████████████████████████████▍                            | 747/1000 [29:07<13:46,  3.27s/it] 
+Instance 747: no solution (timeout or unsolvable)
+Solving CBS instances:  75%|████████████████████████████████████████████████████████████████████████████████████▌                            | 748/1000 [29:17<18:43,  4.46s/it] 
+Instance 749: no solution (timeout or unsolvable)
+Solving CBS instances:  75%|█████████████████████████████████████████████████████████████████████████████████████                            | 753/1000 [29:27<11:12,  2.72s/it] 
+Instance 753: no solution (timeout or unsolvable)
+Solving CBS instances:  76%|█████████████████████████████████████████████████████████████████████████████████████▎                           | 755/1000 [29:46<18:57,  4.64s/it]
+Instance 757: no solution (timeout or unsolvable)
+Solving CBS instances:  76%|█████████████████████████████████████████████████████████████████████████████████████▊                           | 759/1000 [29:57<14:15,  3.55s/it] 
+Instance 759: no solution (timeout or unsolvable)
+Solving CBS instances:  77%|███████████████████████████████████████████████████████████████████████████████████████                          | 771/1000 [30:17<04:19,  1.13s/it] 
+Instance 772: no solution (timeout or unsolvable)
+Solving CBS instances:  77%|███████████████████████████████████████████████████████████████████████████████████████▎                         | 773/1000 [30:28<08:07,  2.15s/it] 
+Instance 773: no solution (timeout or unsolvable)
+Solving CBS instances:  77%|███████████████████████████████████████████████████████████████████████████████████████▍                         | 774/1000 [30:38<12:46,  3.39s/it] 
+Instance 775: no solution (timeout or unsolvable)
+Solving CBS instances:  79%|████████████████████████████████████████████████████████████████████████████████████████▊                        | 786/1000 [30:58<05:00,  1.40s/it] 
+Instance 786: no solution (timeout or unsolvable)
+Solving CBS instances:  79%|█████████████████████████████████████████████████████████████████████████████████████████                        | 788/1000 [31:08<08:25,  2.38s/it]
+Instance 788: no solution (timeout or unsolvable)
+Solving CBS instances:  79%|█████████████████████████████████████████████████████████████████████████████████████████▌                       | 793/1000 [31:20<06:53,  2.00s/it] 
+Instance 793: no solution (timeout or unsolvable)
+Solving CBS instances:  81%|███████████████████████████████████████████████████████████████████████████████████████████▊                     | 812/1000 [31:48<03:57,  1.27s/it] 
+Instance 812: no solution (timeout or unsolvable)
+Solving CBS instances:  81%|███████████████████████████████████████████████████████████████████████████████████████████▊                     | 813/1000 [31:58<07:49,  2.51s/it] 
+Instance 813: no solution (timeout or unsolvable)
+Solving CBS instances:  83%|█████████████████████████████████████████████████████████████████████████████████████████████▌                   | 828/1000 [32:11<01:11,  2.40it/s] 
+Instance 828: no solution (timeout or unsolvable)
+Solving CBS instances:  84%|███████████████████████████████████████████████████████████████████████████████████████████████▏                 | 842/1000 [32:31<02:12,  1.19it/s] 
+Instance 843: no solution (timeout or unsolvable)
+Solving CBS instances:  84%|███████████████████████████████████████████████████████████████████████████████████████████████▍                 | 845/1000 [32:41<04:19,  1.68s/it] 
+Instance 849: no solution (timeout or unsolvable)
+Solving CBS instances:  86%|█████████████████████████████████████████████████████████████████████████████████████████████████▎               | 861/1000 [33:04<02:49,  1.22s/it] 
+Instance 862: no solution (timeout or unsolvable)
+Solving CBS instances:  88%|███████████████████████████████████████████████████████████████████████████████████████████████████▌             | 881/1000 [33:25<01:37,  1.22it/s] 
+Instance 881: no solution (timeout or unsolvable)
+Solving CBS instances:  88%|███████████████████████████████████████████████████████████████████████████████████████████████████▊             | 883/1000 [33:35<04:28,  2.29s/it] 
+Instance 886: no solution (timeout or unsolvable)
+Solving CBS instances:  89%|████████████████████████████████████████████████████████████████████████████████████████████████████▌            | 890/1000 [33:48<03:23,  1.85s/it] 
+Instance 890: no solution (timeout or unsolvable)
+Solving CBS instances:  90%|█████████████████████████████████████████████████████████████████████████████████████████████████████▏           | 895/1000 [34:03<03:38,  2.09s/it] 
+Instance 896: no solution (timeout or unsolvable)
+Solving CBS instances:  90%|██████████████████████████████████████████████████████████████████████████████████████████████████████▏          | 904/1000 [34:23<02:56,  1.84s/it] 
+Instance 904: no solution (timeout or unsolvable)
+Solving CBS instances:  91%|██████████████████████████████████████████████████████████████████████████████████████████████████████▊          | 910/1000 [34:34<02:07,  1.42s/it] 
+Instance 910: no solution (timeout or unsolvable)
+Solving CBS instances:  91%|███████████████████████████████████████████████████████████████████████████████████████████████████████          | 912/1000 [34:44<03:32,  2.42s/it]
+Instance 912: no solution (timeout or unsolvable)
+Solving CBS instances:  91%|███████████████████████████████████████████████████████████████████████████████████████████████████████▏         | 913/1000 [34:54<05:16,  3.64s/it] 
+Instance 913: no solution (timeout or unsolvable)
+Solving CBS instances:  92%|███████████████████████████████████████████████████████████████████████████████████████████████████████▌         | 917/1000 [35:11<05:02,  3.64s/it] 
+Instance 917: no solution (timeout or unsolvable)
+Solving CBS instances:  92%|████████████████████████████████████████████████████████████████████████████████████████████████████████▌        | 925/1000 [35:28<02:15,  1.80s/it]
+Instance 925: no solution (timeout or unsolvable)
+Solving CBS instances:  93%|████████████████████████████████████████████████████████████████████████████████████████████████████████▋        | 926/1000 [35:39<04:43,  3.83s/it] 
+Instance 926: no solution (timeout or unsolvable)
+Solving CBS instances:  93%|████████████████████████████████████████████████████████████████████████████████████████████████████████▊        | 928/1000 [35:49<04:48,  4.00s/it] 
+Instance 928: no solution (timeout or unsolvable)
+Solving CBS instances:  95%|███████████████████████████████████████████████████████████████████████████████████████████████████████████▏     | 949/1000 [36:07<00:41,  1.24it/s] 
+Instance 949: no solution (timeout or unsolvable)
+Solving CBS instances:  95%|███████████████████████████████████████████████████████████████████████████████████████████████████████████▎     | 950/1000 [36:17<02:05,  2.51s/it] 
+Instance 954: no solution (timeout or unsolvable)
+Solving CBS instances:  96%|████████████████████████████████████████████████████████████████████████████████████████████████████████████     | 956/1000 [36:28<01:28,  2.02s/it] 
+Instance 956: no solution (timeout or unsolvable)
+Solving CBS instances:  96%|████████████████████████████████████████████████████████████████████████████████████████████████████████████▎    | 959/1000 [36:39<01:37,  2.38s/it] 
+Instance 959: no solution (timeout or unsolvable)
+Solving CBS instances:  97%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████▎   | 967/1000 [36:50<00:33,  1.03s/it] 
+Instance 967: no solution (timeout or unsolvable)
+Solving CBS instances:  97%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████▍   | 968/1000 [37:00<01:19,  2.48s/it] 
+Instance 969: no solution (timeout or unsolvable)
+Solving CBS instances:  97%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████▋   | 971/1000 [37:10<01:18,  2.72s/it] 
+Instance 972: no solution (timeout or unsolvable)
+Solving CBS instances:  99%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████▉ | 991/1000 [37:28<00:03,  2.72it/s] 
+Instance 993: no solution (timeout or unsolvable)
+Solving CBS instances: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████▌| 996/1000 [37:38<00:04,  1.02s/it] 
+Instance 996: no solution (timeout or unsolvable)
+Solving CBS instances: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████▉| 999/1000 [37:50<00:01,  1.82s/it] 
+Instance 999: no solution (timeout or unsolvable)
+Solving CBS instances: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [38:00<00:00,  2.28s/it] 
+Total instances: 1000
+Success: 825
+Fail (timeout/unsolvable): 175
