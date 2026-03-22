@@ -1,20 +1,14 @@
 import numpy as np
-from env.MAPF_env import *
+from env.MAPF_type import *
 from tqdm import tqdm
 from dataclasses import dataclass
 from collections import deque
 
-@dataclass
-class MAPFGeneratorConfig:
-    height: int 
-    width: int 
-    n_agents: int 
-    obstacle_ratio: float 
-    n_samples: int 
-
 class MAPFIntanceGenerator:
-    def __init__(self, cfg: MAPFGeneratorConfig):
+    def __init__(self, cfg: MAPFGeneratorConfig, base_seed:int=0):
         self.cfg = cfg
+        self.base_seed = base_seed
+        self.instance_idx = 0
 
     def _is_grid_connected(self, grid: np.ndarray) -> bool:
         H, W = grid.shape
@@ -43,7 +37,7 @@ class MAPFIntanceGenerator:
 
         return visited_count == empty_cells.shape[0]
     
-    def sample_single_instance(self, seed: int) -> MAPFInstance:
+    def generate_instance(self, seed: int) -> MAPFInstance:
         rng = np.random.RandomState(seed)
 
         H, W = self.cfg.height, self.cfg.width
@@ -67,10 +61,17 @@ class MAPFIntanceGenerator:
 
             return MAPFInstance(grid=grid, starts=starts, goals=goals)
     
-    def sample_instances(self, seeds: list[int]) -> list[MAPFInstance]:
+    def next_instance(self) -> MAPFInstance:
+        seed = self.base_seed + self.instance_idx
+        instance = self.generate_instance(seed)
+        self.instance_idx += 1
+
+        return instance
+
+    def sample_instances(self, n_samples) -> list[MAPFInstance]:
         instances = []
-        for s in tqdm(seeds, desc="Generating MAPF instances"):
-            instances.append(self.sample_single_instance(seed=s))
+        for _ in tqdm(n_samples, desc="Generating MAPF instances"):
+            instances.append(self.next_instance())
             
         return instances
     

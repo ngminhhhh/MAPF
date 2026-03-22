@@ -1,7 +1,9 @@
 import gymnasium as gym
 from gymnasium import spaces
-from dataclasses import dataclass
+from env.MAPF_type import *
 import numpy as np
+
+from utils.generator import *
 
 import pygame 
 import heapq
@@ -47,20 +49,6 @@ def A_star(grid: np.ndarray, start: np.ndarray, goal: np.ndarray):
                 heapq.heappush(open_heap, (tentative_g + manhattan(nr, nc, gr, gc), tentative_g, (nr, nc)))
 
     return None
-
-@dataclass
-class MAPFInstance:
-    grid: np.ndarray # (H, W) 0 is free, 1 is obstacle
-    starts: np.ndarray
-    goals: np.ndarray
-
-@dataclass
-class MAPFEnvConfig:
-    width: int
-    height: int
-    n_agents: int
-    obs_radius: int
-    max_steps: int
 
 class MAPFRender:
     def __init__(self, cell_size=60, margin=20, fps=30, title="MAPF"):
@@ -210,15 +198,14 @@ class MAPFRender:
 class MAPFEnv(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps":5}
 
-    def __init__(self, env_cfg: MAPFEnvConfig, instances: list[MAPFInstance], reward_fn, render_mode="human"):
+    def __init__(self, env_cfg: MAPFEnvConfig, instance_generator: MAPFIntanceGenerator, reward_fn, render_mode="human"):
         super().__init__()
         self.env_cfg = env_cfg
-        self.instances = instances
+        self.instance_generator = instance_generator
         self.reward_fn = reward_fn
 
         self.render_mode = render_mode
         self._renderer = MAPFRender(cell_size=60, margin=20, fps=self.metadata.get("render_fps", 5))
-
         
         self.action_space = spaces.MultiDiscrete([5] * self.env_cfg.n_agents) # (n_agents, ) with value in ith is action of agents i in [0,4]
         self.observation_space = spaces.Box(
@@ -245,11 +232,8 @@ class MAPFEnv(gym.Env):
         '''
         super().reset(seed=seed)
 
-        # * Get new instance from dataset
-        idx = self.instance_idx % len(self.instances)
-        self.instance_idx += 1
-        instance = self.instances[idx]
-        self.current_instance_idx = idx
+        # * Get new instance 
+        instance = self.instance_generator.next_instance()
 
         # * Config new instance
         self.grid = instance.grid
@@ -260,7 +244,7 @@ class MAPFEnv(gym.Env):
         # * Build observation
         obs = self._build_observation()
         info = {
-            "edge_index": self._build_communication_graph()
+            
         }
 
         return obs, info
@@ -351,35 +335,9 @@ class MAPFEnv(gym.Env):
         info = {
             "terminated": terminated,
             "truncated": truncated,
-            "edge_index": self._build_communication_graph()
         }
 
         return obs, reward, terminated, truncated, info
-
-
-    def _build_communication_graph(self):
-        R = self.env_cfg.obs_radius
-
-        pos2id = {(int(r), int(c)): i for i, (r, c) in enumerate(self.agent_pos)}
-
-        src_list = []
-        dst_list = []
-
-        for i, (r, c) in enumerate(self.agent_pos):
-            r = int(r); c = int(c)
-
-            for dr in range(-R, R + 1):
-                for dc in range(-R, R + 1):
-                    j = pos2id.get((r + dr, c + dc))
-                    if j is None:
-                        continue
-
-                    src_list.append(i)
-                    dst_list.append(j)
-
-        edge_index = np.array([src_list, dst_list], dtype=np.int64)  # (2,E)
-
-        return edge_index
 
     def _build_observation(self):
         H, W = self.env_cfg.height, self.env_cfg.width
