@@ -17,8 +17,9 @@ class MAPFEnvConfig:
 
 @dataclass
 class MAPFGeneratorConfig:
-    height: int 
     width: int 
+    height: int 
     n_agents: int 
     obstacle_ratio: float 
-    n_samples: int 
+    n_samples: int
+    seed: int 

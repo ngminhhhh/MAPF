@@ -198,7 +198,7 @@ class MAPFRender:
 class MAPFEnv(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps":5}
 
-    def __init__(self, env_cfg: MAPFEnvConfig, instance_generator: MAPFIntanceGenerator, reward_fn, render_mode="human"):
+    def __init__(self, env_cfg: MAPFEnvConfig, instance_generator: MAPFGenerator, reward_fn, render_mode="human"):
         super().__init__()
         self.env_cfg = env_cfg
         self.instance_generator = instance_generator
@@ -216,7 +216,6 @@ class MAPFEnv(gym.Env):
         )
 
         # * Instances controller
-        self.instance_idx = 0
         self.grid: np.ndarray  # (H, W)
         self.agent_pos: np.ndarray  # (N, 2)
         self.agent_goal: np.ndarray # (N, 2)
@@ -233,7 +232,7 @@ class MAPFEnv(gym.Env):
         super().reset(seed=seed)
 
         # * Get new instance 
-        instance = self.instance_generator.next_instance()
+        instance = self.instance_generator.generate_instance()
 
         # * Config new instance
         self.grid = instance.grid
@@ -244,7 +243,7 @@ class MAPFEnv(gym.Env):
         # * Build observation
         obs = self._build_observation()
         info = {
-            
+            "comm_edges": self._build_communication_graph(),
         }
 
         return obs, info
@@ -335,6 +334,7 @@ class MAPFEnv(gym.Env):
         info = {
             "terminated": terminated,
             "truncated": truncated,
+            "comm_edges": self._build_communication_graph(),
         }
 
         return obs, reward, terminated, truncated, info
@@ -389,8 +389,30 @@ class MAPFEnv(gym.Env):
                 if 0 <= wr < 2*R + 1 and 0 <= wc < 2*R + 1:
                     obs[i, wr, wc, 3] = 1.0
 
-
         return obs # * (N, 2R + 1, 2R + 1, 4)
+
+
+    def _build_communication_graph(self):
+        pos = self.agent_pos                
+        R = self.env_cfg.obs_radius
+
+        # Pairwise relative positions: rel[i, j] = pos[j] - pos[i]
+        rel = pos[None, :, :] - pos[:, None, :]   # (N, N, 2)
+
+        # Square FOV mask
+        in_fov = (
+            (np.abs(rel[:, :, 0]) <= R) &
+            (np.abs(rel[:, :, 1]) <= R)
+        )                                        # (N, N)
+
+        # Remove self-loops
+        np.fill_diagonal(in_fov, False)
+
+        # Convert boolean mask -> edge list [src, dst]
+        src, dst = np.nonzero(in_fov)
+        edges = np.stack([src, dst], axis=1).astype(np.int64)   # (E, 2)
+
+        return edges
 
     def render(self):
         if self._renderer is None:
