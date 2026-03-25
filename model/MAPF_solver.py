@@ -36,7 +36,7 @@ class FeatureExtraction(nn.Module):
 
     def forward(self, x):
         return self.extractor(x)
-    
+
 class Solver(nn.Module):
     def __init__(self, obs_channels: int, 
                  cnn_hidden_dim: int, cnn_n_blocks:int, kernel_size: int):

@@ -45,8 +45,6 @@ if __name__ == "__main__":
     # * Main:
     for i in range(n_samples):
         obs, info = env.reset()
-        print(info["comm_edges"])
-        break
         done = False
 
         while not done:

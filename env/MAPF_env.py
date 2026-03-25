@@ -391,7 +391,6 @@ class MAPFEnv(gym.Env):
 
         return obs # * (N, 2R + 1, 2R + 1, 4)
 
-
     def _build_communication_graph(self):
         pos = self.agent_pos                
         R = self.env_cfg.obs_radius
@@ -403,7 +402,7 @@ class MAPFEnv(gym.Env):
         in_fov = (
             (np.abs(rel[:, :, 0]) <= R) &
             (np.abs(rel[:, :, 1]) <= R)
-        )                                        # (N, N)
+        ) # (N, N)
 
         # Remove self-loops
         np.fill_diagonal(in_fov, False)
