@@ -10,10 +10,10 @@ class ReplayBuffer:
         state_shape = (n_agents, obs_size, obs_size, obs_channels)
 
         # Transitions
-        self.states      = np.zeros((capacity, *state_shape), dtype=np.float32)    # s_{t}   : (T, N, H, W, C)
+        self.states      = np.zeros((capacity, *state_shape), dtype=np.float32)    # s_{t}   : (T, N, 2R+1, 2R+1, C)
         self.actions     = np.zeros((capacity, n_agents),     dtype=np.int64)      # a_{t}   : (T, N)
         self.rewards     = np.zeros((capacity, n_agents),     dtype=np.float32)    # r_{t}   : (T, N)
-        self.next_states = np.zeros((capacity, *state_shape), dtype=np.float32)    # s_{t+1} : (T, N, H, W, C)
+        self.next_states = np.zeros((capacity, *state_shape), dtype=np.float32)    # s_{t+1} : (T, N, 2R+1, 2R+1, C)
         self.dones       = np.zeros((capacity, n_agents),     dtype=bool)          # (T, N)
     
         # Controller

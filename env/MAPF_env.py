@@ -409,7 +409,7 @@ class MAPFEnv(gym.Env):
 
         # Convert boolean mask -> edge list [src, dst]
         src, dst = np.nonzero(in_fov)
-        edges = np.stack([src, dst], axis=1).astype(np.int64)   # (E, 2)
+        edges = np.stack([dst, src], axis=1).astype(np.int64)   # (E, 2) src send message to dst
 
         return edges
 
