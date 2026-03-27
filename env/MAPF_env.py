@@ -198,7 +198,7 @@ class MAPFRender:
 class MAPFEnv(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps":5}
 
-    def __init__(self, env_cfg: MAPFEnvConfig, instance_generator: MAPFGenerator, reward_fn, render_mode="human"):
+    def __init__(self, env_cfg: MAPFEnvConfig, instance_generator: MAPFGenerator, reward_fn=None, render_mode="human"):
         super().__init__()
         self.env_cfg = env_cfg
         self.instance_generator = instance_generator
@@ -324,11 +324,7 @@ class MAPFEnv(gym.Env):
         terminated = bool(np.all(at_goal))
         truncated = self.step_count >= self.env_cfg.max_steps and not terminated
 
-        reward = self.reward_fn(
-                self,
-                old_pos,
-                self.agent_pos,
-            )
+        reward = np.zeros(self.env_cfg.n_agents, dtype=np.float32)
         
         obs = self._build_observation()
         info = {

@@ -156,6 +156,7 @@ class Solver(nn.Module):
                  mlp_hidden_dim:int, n_mlp_layers:int
                  ):
         super().__init__()
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         self.feature_extractor = FeatureExtraction(obs_channels, cnn_hidden_dim, n_cnn_blocks, kernel_size)
         cnn_out_dim = obs_width * obs_height * cnn_hidden_dim
@@ -164,6 +165,9 @@ class Solver(nn.Module):
         self.head = PolicyHead(in_dim=gat_hidden_dim*n_gat_heads, hidden_dim=mlp_hidden_dim, n_mlp_layers=n_mlp_layers)
 
     def forward(self, x, edges):
+        x = torch.tensor(x, dtype=torch.float32, device=self.device)
+        x = x.permute(0, 3, 1, 2).contiguous()
+
         feats = self.feature_extractor(x)
         feats = self.feature_aggregator(feats, edges)
         logits, value = self.head(feats)
@@ -172,7 +176,8 @@ class Solver(nn.Module):
     
     @torch.no_grad()
     def act(self, obs, edges, deterministic=False):
-        logits, values = self.forward(obs, edges)
+        logits, values = self.forward(obs, edges)   
+
         dist = Categorical(logits=logits)
 
         if deterministic:
@@ -180,5 +185,10 @@ class Solver(nn.Module):
         else:
             actions = dist.sample()
 
-        return actions
-        
+        log_probs = dist.log_prob(actions)
+
+        values = values.squeeze(-1) # (N, )
+
+        actions = actions.cpu().numpy()
+
+        return actions, log_probs, values
