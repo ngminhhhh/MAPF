@@ -17,7 +17,7 @@ if __name__ == "__main__":
     n_agents = 4
     observation_radius = 3
 
-    n_samples = 10_000 # number of training samples
+    n_samples = 1 # number of training samples
     max_steps = grid_width * grid_height # max step before interrupt
 
     # * Env + generator config
@@ -43,6 +43,7 @@ if __name__ == "__main__":
     cnn_hidden_dim = 128
     n_cnn_blocks = 2
     kernel_size = 2*observation_radius +1
+    goal_out_dim = 4
     # * gat
     gat_hidden_dim = 128
     n_gat_heads = 2
@@ -51,7 +52,7 @@ if __name__ == "__main__":
     n_mlp_layers = 2
 
     model = Solver(obs_width=2*observation_radius+1, obs_height=2*observation_radius+1, obs_channels=observation_channels,
-                   cnn_hidden_dim=cnn_hidden_dim, n_cnn_blocks=n_cnn_blocks, kernel_size=kernel_size,
+                   cnn_hidden_dim=cnn_hidden_dim, n_cnn_blocks=n_cnn_blocks, kernel_size=kernel_size, goal_out_dim=goal_out_dim,
                    gat_hidden_dim=gat_hidden_dim, n_gat_heads=n_gat_heads,
                    mlp_hidden_dim=mlp_hidden_dim,n_mlp_layers=n_mlp_layers).to(device)
 
@@ -61,15 +62,16 @@ if __name__ == "__main__":
     for i in range(n_samples):
         obs, info = env.reset()
         comm_edges = info["comm_edges"]
+        goal_vec = env.agent_goal - env.agent_pos
         done = False
 
         while not done:
-            actions, log_probs, values = model.act(obs, comm_edges)
+            actions, log_probs, values = model.act(obs, goal_vec, comm_edges)
             new_obs, rewards, terminated, truncated, info = env.step(actions)
             print(rewards)
 
             done = terminated or truncated
-            buffer.push(state=obs, action=actions, reward=rewards, done=np.full(n_agents, done, dtype=bool), log_prob=log_probs.cpu().numpy(), value=values.cpu().numpy(), edges=comm_edges)
+            buffer.push(state=obs, goal_vec=goal_vec, action=actions, reward=rewards, done=np.full(n_agents, done, dtype=bool), log_prob=log_probs.cpu().numpy(), value=values.cpu().numpy(), edges=comm_edges)
 
             if buffer.is_full():
                 loss = train_step(model, optimizer, buffer, new_obs, info["comm_edges"], 
@@ -80,9 +82,10 @@ if __name__ == "__main__":
             # Assign new observation and communication graph
             obs = new_obs
             comm_edges = info["comm_edges"]
+            goal_vec = env.agent_goal - env.agent_pos
 
         if buffer.size > 0:
-            loss = train_step(model, optimizer, buffer, None, None, 
+            loss = train_step(model, optimizer, buffer, None, None, None,
                           gamma=0.99, lam=0.95, clip_eps=0.2, value_coef=0.5, entropy_coef=0.01, n_epochs=4)
         
             buffer.reset()

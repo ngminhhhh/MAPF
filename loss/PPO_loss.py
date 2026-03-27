@@ -1,25 +1,29 @@
 import numpy as np
-from utils.replayBuffer import ReplayBuffer
-
-import numpy as np
 import torch
 from torch.distributions import Categorical
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-def compute_gae(model, buffer, next_state=None, next_edges=None, gamma=0.99, lam=0.95):
+
+def compute_gae(model, buffer, next_state=None, next_goal_vec=None, next_edges=None, gamma=0.99, lam=0.95):
     T = buffer.size
     N = buffer.N
 
-    rewards = torch.as_tensor(buffer.rewards[:T], dtype=torch.float32, device=device)
-    values  = torch.as_tensor(buffer.values[:T], dtype=torch.float32, device=device)
-    dones   = torch.as_tensor(buffer.dones[:T], dtype=torch.float32, device=device)
+    rewards = torch.as_tensor(buffer.rewards[:T], dtype=torch.float32, device=device)   # (T, N)
+    values  = torch.as_tensor(buffer.values[:T], dtype=torch.float32, device=device)    # (T, N)
+    dones   = torch.as_tensor(buffer.dones[:T], dtype=torch.float32, device=device)     # (T, N)
 
-    if next_state is None and next_edges is None:
+    # Bootstrap value for the state after the last stored transition
+    if next_state is None or next_goal_vec is None or next_edges is None:
         bootstrap_value = torch.zeros(N, dtype=torch.float32, device=device)
     else:
-        _, _, bootstrap_value = model.act(next_state, next_edges, deterministic=True)
-        bootstrap_value = bootstrap_value.to(device=device, dtype=torch.float32)
+        _, _, bootstrap_value = model.act(
+            next_state,
+            next_goal_vec,
+            next_edges,
+            deterministic=True
+        )
+        bootstrap_value = bootstrap_value.to(device=device, dtype=torch.float32)         # (N,)
         bootstrap_value = bootstrap_value * (1.0 - dones[-1])
 
     next_values = torch.empty((T, N), dtype=torch.float32, device=device)
@@ -39,6 +43,7 @@ def compute_gae(model, buffer, next_state=None, next_edges=None, gamma=0.99, lam
     returns = advantages + values
     return advantages.cpu().numpy(), returns.cpu().numpy()
 
+
 def evaluate_actions(model, buffer):
     T = buffer.size
 
@@ -47,10 +52,13 @@ def evaluate_actions(model, buffer):
     all_entropies = []
 
     for t in range(T):
-        act_t = torch.as_tensor(buffer.actions[t], dtype=torch.long, device=device)      # (N,)
+        obs_t = buffer.states[t]           # (N, H, W, C)
+        goal_t = buffer.goal_vecs[t]       # (N, 2)
+        edges_t = buffer.edges[t]
+        act_t = torch.as_tensor(buffer.actions[t], dtype=torch.long, device=device)   # (N,)
 
-        logits_t, values_t = model.forward(buffer.states[t], buffer.edges[t])   # logits: (N, A), values: (N, 1)
-        values_t = values_t.squeeze(-1)                     # (N,)
+        logits_t, values_t = model.forward(obs_t, goal_t, edges_t)   # logits: (N, A), values: (N, 1)
+        values_t = values_t.squeeze(-1)                               # (N,)
 
         dist_t = Categorical(logits=logits_t)
 
@@ -67,11 +75,11 @@ def evaluate_actions(model, buffer):
 
     return new_log_probs, new_values, entropies
 
-def ppo_loss(model, buffer, advantages, returns, clip_eps=0.2, value_coef=0.5, entropy_coef=0.01):
 
-    old_log_probs = torch.as_tensor(buffer.log_probs[:buffer.size], dtype=torch.float32, device=device)
-    advantages = torch.as_tensor(advantages, dtype=torch.float32, device=device)
-    returns = torch.as_tensor(returns, dtype=torch.float32, device=device)
+def ppo_loss(model, buffer, advantages, returns, clip_eps=0.2, value_coef=0.5, entropy_coef=0.01):
+    old_log_probs = torch.as_tensor(buffer.log_probs[:buffer.size], dtype=torch.float32, device=device)  # (T, N)
+    advantages = torch.as_tensor(advantages, dtype=torch.float32, device=device)                         # (T, N)
+    returns = torch.as_tensor(returns, dtype=torch.float32, device=device)                               # (T, N)
 
     new_log_probs, new_values, entropies = evaluate_actions(model, buffer)
 
@@ -91,30 +99,53 @@ def ppo_loss(model, buffer, advantages, returns, clip_eps=0.2, value_coef=0.5, e
     entropy_bonus = entropies.mean()
 
     loss = policy_loss + value_coef * value_loss - entropy_coef * entropy_bonus
-
     return loss
 
-def train_step(model, optimizer, buffer,
-               next_state, next_edges,
-               *, gamma=0.99, lam=0.95,
-               clip_eps=0.2, value_coef=0.5, entropy_coef=0.01,
-               n_epochs=4):
-    
-    advantages, returns = compute_gae(model=model, buffer=buffer, next_state=next_state, next_edges=next_edges, 
-                                      gamma=gamma, lam=lam)
-    
+
+def train_step(
+    model,
+    optimizer,
+    buffer,
+    next_state=None,
+    next_goal_vec=None,
+    next_edges=None,
+    *,
+    gamma=0.99,
+    lam=0.95,
+    clip_eps=0.2,
+    value_coef=0.5,
+    entropy_coef=0.01,
+    n_epochs=4
+):
+    advantages, returns = compute_gae(
+        model=model,
+        buffer=buffer,
+        next_state=next_state,
+        next_goal_vec=next_goal_vec,
+        next_edges=next_edges,
+        gamma=gamma,
+        lam=lam
+    )
+
     advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
 
     last_loss = None
     for _ in range(n_epochs):
-        loss = ppo_loss(model=model, buffer=buffer, advantages=advantages, returns=returns,
-                        clip_eps=clip_eps, value_coef=value_coef, entropy_coef=entropy_coef)
-        
+        loss = ppo_loss(
+            model=model,
+            buffer=buffer,
+            advantages=advantages,
+            returns=returns,
+            clip_eps=clip_eps,
+            value_coef=value_coef,
+            entropy_coef=entropy_coef
+        )
+
         optimizer.zero_grad()
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
         optimizer.step()
+
         last_loss = loss.item()
 
     return last_loss
-
