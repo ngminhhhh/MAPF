@@ -1,6 +1,7 @@
 from env.MAPF_env import *
 from utils.generator import *
 from utils.replayBuffer import *
+from loss.PPO_loss import train_step
 
 from model.MAPF_solver import Solver
 
@@ -16,7 +17,7 @@ if __name__ == "__main__":
     observation_radius = 3
 
     n_samples = 1 # number of training samples
-    max_steps = grid_width * grid_height # max step before interrupt
+    max_steps = 256 # max step before interrupt
 
     # * Env + generator config
     env_cfg = MAPFEnvConfig(width=grid_width, height=grid_height, 
@@ -53,6 +54,8 @@ if __name__ == "__main__":
                    gat_hidden_dim=gat_hidden_dim, n_gat_heads=n_gat_heads,
                    mlp_hidden_dim=mlp_hidden_dim,n_mlp_layers=n_mlp_layers).to(device)
 
+    optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
+
     # * Main:
     for i in range(n_samples):
         obs, info = env.reset()
@@ -61,13 +64,24 @@ if __name__ == "__main__":
 
         while not done:
             actions, log_probs, values = model.act(obs, comm_edges)
-            print(actions)
-            new_obs, rewards, terminated, truncated, _ = env.step(actions)
+            new_obs, rewards, terminated, truncated, info = env.step(actions)
 
             done = terminated or truncated
+            buffer.push(state=obs, action=actions, reward=rewards, done=np.full(n_agents, done, dtype=bool), log_prob=log_probs.cpu().numpy(), value=values.cpu().numpy(), edges=comm_edges)
 
-            buffer.push(state=obs, action=actions, reward=rewards, done=np.full(n_agents, done, dtype=bool), log_prob=log_probs.cpu().numpy(), value=values.cpu().numpy())
+            if buffer.is_full():
+                loss = train_step(model, optimizer, buffer, new_obs, info["comm_edges"], 
+                           gamma=0.99, lam=0.95, clip_eps=0.2, value_coef=0.5, entropy_coef=0.01, n_epochs=4)
+                
+                buffer.reset()
 
+            # Assign new observation and communication graph
+            obs = new_obs
+            comm_edges = info["comm_edges"]
 
+        loss = train_step(model, optimizer, buffer, None, None, 
+                          gamma=0.99, lam=0.95, clip_eps=0.2, value_coef=0.5, entropy_coef=0.01, n_epochs=4)
+        
+        buffer.reset()
 
             
