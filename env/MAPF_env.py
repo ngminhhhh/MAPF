@@ -219,6 +219,8 @@ class MAPFEnv(gym.Env):
         self.grid: np.ndarray  # (H, W)
         self.agent_pos: np.ndarray  # (N, 2)
         self.agent_goal: np.ndarray # (N, 2)
+        self.comm_graph = None
+        self.stagnation_count = np.zeros(self.env_cfg.n_agents, dtype=np.int32)
 
         # * Instance info 
         self.step_count = 0
@@ -239,11 +241,13 @@ class MAPFEnv(gym.Env):
         self.agent_pos = instance.starts.copy()
         self.agent_goal = instance.goals
         self.step_count = 0
+        self.comm_graph = self._build_communication_graph()
+        self.stagnation_count.fill(0)
 
         # * Build observation
         obs = self._build_observation()
         info = {
-            "comm_edges": self._build_communication_graph(),
+            "comm_edges": self.comm_graph,
         }
 
         return obs, info
@@ -324,16 +328,16 @@ class MAPFEnv(gym.Env):
         terminated = bool(np.all(at_goal))
         truncated = self.step_count >= self.env_cfg.max_steps and not terminated
 
-        reward = np.zeros(self.env_cfg.n_agents, dtype=np.float32)
+        rewards = self.reward_fn(self, old_pos, self.agent_pos, step_penalty=0.05, goal_reward=5.0, progress_w=0.3,
+                                stag_threshold=2, stag_lambda=0.02, share_alpha=0.3)
         
         obs = self._build_observation()
+        self.comm_graph = self._build_communication_graph()
         info = {
-            "terminated": terminated,
-            "truncated": truncated,
-            "comm_edges": self._build_communication_graph(),
+            "comm_edges": self.comm_graph,
         }
 
-        return obs, reward, terminated, truncated, info
+        return obs, rewards, terminated, truncated, info
 
     def _build_observation(self):
         H, W = self.env_cfg.height, self.env_cfg.width

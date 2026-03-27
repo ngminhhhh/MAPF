@@ -4,6 +4,7 @@ from utils.replayBuffer import *
 from loss.PPO_loss import train_step
 
 from model.MAPF_solver import Solver
+from model.reward import reward_fn
 
 import torch
 
@@ -16,8 +17,8 @@ if __name__ == "__main__":
     n_agents = 4
     observation_radius = 3
 
-    n_samples = 1 # number of training samples
-    max_steps = 256 # max step before interrupt
+    n_samples = 10_000 # number of training samples
+    max_steps = grid_width * grid_height # max step before interrupt
 
     # * Env + generator config
     env_cfg = MAPFEnvConfig(width=grid_width, height=grid_height, 
@@ -29,7 +30,7 @@ if __name__ == "__main__":
     
     # * Init generator + env
     generator = MAPFGenerator(cfg=generator_cfg)
-    env = MAPFEnv(env_cfg=env_cfg, instance_generator=generator, reward_fn=None)
+    env = MAPFEnv(env_cfg=env_cfg, instance_generator=generator, reward_fn=reward_fn)
 
     buffer = ReplayBuffer(capacity=256, 
                           n_agents=n_agents, 
@@ -65,6 +66,7 @@ if __name__ == "__main__":
         while not done:
             actions, log_probs, values = model.act(obs, comm_edges)
             new_obs, rewards, terminated, truncated, info = env.step(actions)
+            print(rewards)
 
             done = terminated or truncated
             buffer.push(state=obs, action=actions, reward=rewards, done=np.full(n_agents, done, dtype=bool), log_prob=log_probs.cpu().numpy(), value=values.cpu().numpy(), edges=comm_edges)
@@ -79,9 +81,10 @@ if __name__ == "__main__":
             obs = new_obs
             comm_edges = info["comm_edges"]
 
-        loss = train_step(model, optimizer, buffer, None, None, 
+        if buffer.size > 0:
+            loss = train_step(model, optimizer, buffer, None, None, 
                           gamma=0.99, lam=0.95, clip_eps=0.2, value_coef=0.5, entropy_coef=0.01, n_epochs=4)
         
-        buffer.reset()
+            buffer.reset()
 
             

@@ -11,33 +11,33 @@ def compute_gae(model, buffer, next_state=None, next_edges=None, gamma=0.99, lam
     T = buffer.size
     N = buffer.N
 
-    rewards = buffer.rewards[:T]   # (T, N)
-    values  = buffer.values[:T]    # (T, N)
-    dones   = buffer.dones[:T]     # (T, N)
+    rewards = torch.as_tensor(buffer.rewards[:T], dtype=torch.float32, device=device)
+    values  = torch.as_tensor(buffer.values[:T], dtype=torch.float32, device=device)
+    dones   = torch.as_tensor(buffer.dones[:T], dtype=torch.float32, device=device)
 
-    advantages = np.zeros((T, N), dtype=np.float32)
-    gae = np.zeros((N,), dtype=np.float32)
-
-    if next_state is None or next_edges is None:
-        next_value = np.zeros((N,), dtype=np.float32)
+    if next_state is None and next_edges is None:
+        bootstrap_value = torch.zeros(N, dtype=torch.float32, device=device)
     else:
-        _, _, next_value = model.act(next_state, next_edges, deterministic=True)
-        next_value = next_value.detach().cpu().numpy().astype(np.float32)
+        _, _, bootstrap_value = model.act(next_state, next_edges, deterministic=True)
+        bootstrap_value = bootstrap_value.to(device=device, dtype=torch.float32)
+        bootstrap_value = bootstrap_value * (1.0 - dones[-1])
 
-        next_value = next_value * (1.0 - dones[-1])
+    next_values = torch.empty((T, N), dtype=torch.float32, device=device)
+    next_values[:-1] = values[1:]
+    next_values[-1] = bootstrap_value
 
-    for t in reversed(range(T)):
-        if t == T - 1:
-            value_next = next_value
-        else:
-            value_next = values[t + 1]
+    deltas = rewards + gamma * next_values * (1.0 - dones) - values
 
-        delta = rewards[t] + gamma * value_next * (1.0 - dones[t]) - values[t]
-        gae = delta + gamma * lam * (1.0 - dones[t]) * gae
+    advantages = torch.empty((T, N), dtype=torch.float32, device=device)
+    gae = torch.zeros((N,), dtype=torch.float32, device=device)
+
+    coef = gamma * lam
+    for t in range(T - 1, -1, -1):
+        gae = deltas[t] + coef * (1.0 - dones[t]) * gae
         advantages[t] = gae
 
     returns = advantages + values
-    return advantages, returns
+    return advantages.cpu().numpy(), returns.cpu().numpy()
 
 def evaluate_actions(model, buffer):
     T = buffer.size
@@ -112,6 +112,7 @@ def train_step(model, optimizer, buffer,
         
         optimizer.zero_grad()
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
         optimizer.step()
         last_loss = loss.item()
 
