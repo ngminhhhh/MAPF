@@ -1,12 +1,8 @@
 import numpy as np
 from env.MAPF_env import *
 
-import numpy as np
-
-import numpy as np
-
 def reward_fn(env, old_pos, new_pos, *,
-             step_penalty=0.05, goal_reward=5.0, progress_w=0.3, stag_threshold=2, stag_lambda=0.02, share_alpha=0.3):
+             goal_reward=5.0, progress_w=0.3, stag_threshold=2, stag_lambda=0.02, share_alpha=0.3):
     goals = env.agent_goal   # (N, 2)
 
     # Goal masks 
@@ -31,12 +27,10 @@ def reward_fn(env, old_pos, new_pos, *,
     stag_penalty = stag_lambda * (overflow ** 2)
 
     # Self reward 
-    step_cost = step_penalty * active.astype(np.float32)
     effective_stag_penalty = stag_penalty.astype(np.float32) * active.astype(np.float32)
 
     ind_rewards = (
         progress_w * delta.astype(np.float32)
-        - step_cost
         - effective_stag_penalty
         + goal_reward * newly_reached_goal.astype(np.float32)
     ).astype(np.float32)

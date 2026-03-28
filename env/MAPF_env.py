@@ -103,9 +103,9 @@ class MAPFRender:
         y = self.margin + r * self.cell_size
         return pygame.Rect(x, y, self.cell_size, self.cell_size)
 
-    def _build_background(self, grid, instance_idx):
+    def _build_background(self, grid, instance_idx=None):
         H, W = grid.shape
-        key = (instance_idx, grid.shape[0], grid.shape[1], self.cell_size, self.margin)
+        key = (instance_idx, H, W, self.cell_size, self.margin)
 
         if self._bg_surface is not None and self._bg_key == key:
             return
@@ -115,7 +115,6 @@ class MAPFRender:
         surf = pygame.Surface((w_px, h_px)).convert()
         surf.fill(self.BG)
 
-        # Draw cells + grid lines
         for r in range(H):
             for c in range(W):
                 rect = self._cell_rect(r, c)
@@ -123,7 +122,6 @@ class MAPFRender:
                     pygame.draw.rect(surf, self.OBSTACLE, rect)
                 else:
                     pygame.draw.rect(surf, self.FREE_CELL, rect)
-
                 pygame.draw.rect(surf, self.GRID_LINE, rect, 1)
 
         self._bg_surface = surf
@@ -221,6 +219,7 @@ class MAPFEnv(gym.Env):
         self.agent_goal: np.ndarray # (N, 2)
         self.comm_graph = None
         self.stagnation_count = np.zeros(self.env_cfg.n_agents, dtype=np.int32)
+        self.instances_idx = -1
 
         # * Instance info 
         self.step_count = 0
@@ -235,6 +234,7 @@ class MAPFEnv(gym.Env):
 
         # * Get new instance 
         instance = self.instance_generator.generate_instance()
+        self.instances_idx += 1
 
         # * Config new instance
         self.grid = instance.grid
@@ -328,7 +328,7 @@ class MAPFEnv(gym.Env):
         terminated = bool(np.all(at_goal))
         truncated = self.step_count >= self.env_cfg.max_steps and not terminated
 
-        rewards = self.reward_fn(self, old_pos, self.agent_pos, step_penalty=0.05, goal_reward=5.0, progress_w=0.3,
+        rewards = self.reward_fn(self, old_pos, self.agent_pos, goal_reward=5.0, progress_w=0.3,
                                 stag_threshold=2, stag_lambda=0.02, share_alpha=0.3)
         
         obs = self._build_observation()
@@ -417,8 +417,10 @@ class MAPFEnv(gym.Env):
         if self._renderer is None:
             return None
         return self._renderer.render(
-            self.grid, self.agent_pos, self.agent_goal,
-            instance_idx=self.current_instance_idx,
+            self.grid,
+            self.agent_pos,
+            self.agent_goal,
+            self.instances_idx,
             mode=self.render_mode
         )
 

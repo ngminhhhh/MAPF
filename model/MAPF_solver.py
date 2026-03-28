@@ -21,7 +21,11 @@ class CNNBlock(nn.Module):
 class GoalEncoder(nn.Module):
     def __init__(self, in_dim=2, out_dim=4):
         super().__init__()
-        self.encoder = nn.Linear(in_dim, out_dim)
+        self.encoder = nn.Sequential(
+            nn.Linear(in_dim, 8),
+            nn.ReLU(),
+            nn.Linear(8, out_dim)
+        )
 
     def forward(self, x):
         return self.encoder(x)
@@ -177,8 +181,8 @@ class Solver(nn.Module):
         self.head = PolicyHead(in_dim=gat_hidden_dim*n_gat_heads, hidden_dim=mlp_hidden_dim, n_mlp_layers=n_mlp_layers)
 
     def forward(self, obs, goal_vecs, edges):
-        obs = torch.tensor(obs, dtype=torch.float32, device=self.device)
-        goal_vecs = torch.tensor(goal_vecs, dtype=torch.float32, device=self.device)
+        obs = torch.as_tensor(obs, dtype=torch.float32, device=self.device)
+        goal_vecs = torch.as_tensor(goal_vecs, dtype=torch.float32, device=self.device)
         obs = obs.permute(0, 3, 1, 2).contiguous()
 
         feats = self.feature_extractor(obs, goal_vecs)
