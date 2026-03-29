@@ -328,7 +328,10 @@ class MAPFEnv(gym.Env):
         terminated = bool(np.all(at_goal))
         truncated = self.step_count >= self.env_cfg.max_steps and not terminated
 
-        rewards = self.reward_fn(self, old_pos, self.agent_pos, goal_reward=20.0, progress_w=0.3, share_alpha=0.3)
+        if self.reward_fn is not None:
+            rewards = self.reward_fn(self, old_pos, self.agent_pos, goal_reward=20.0, progress_w=0.3, share_alpha=0.3) 
+        else:
+            rewards = None
         
         obs = self._build_observation()
         self.comm_graph = self._build_communication_graph()
