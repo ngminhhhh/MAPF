@@ -2,7 +2,7 @@ import numpy as np
 from env.MAPF_env import *
 
 def reward_fn(env, old_pos, new_pos, *,
-             goal_reward=5.0, progress_w=0.3, step_penalty=0.05, share_alpha=0.3):
+             goal_reward=20.0, progress_w=0.3, step_penalty=0.05, share_alpha=0.3):
     goals = env.agent_goal   # (N, 2)
 
     # Goal masks
@@ -15,7 +15,6 @@ def reward_fn(env, old_pos, new_pos, *,
     new_dist = np.abs(new_pos - goals).sum(axis=1)   # (N,)
     delta = old_dist - new_dist                      # (N,)
 
-    # Chỉ phạt step với agent chưa tới goal
     active = ~at_goal_new
     effective_step_penalty = step_penalty * active.astype(np.float32)
 

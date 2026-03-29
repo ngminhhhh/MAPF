@@ -16,7 +16,7 @@ if __name__ == "__main__":
     observation_radius = 3
 
     n_samples = 100
-    max_steps = grid_width * grid_height
+    max_steps = 10
 
     # Save dirs
     ckpt_dir = "checkpoints"
@@ -72,7 +72,7 @@ if __name__ == "__main__":
         n_mlp_layers=n_mlp_layers
     ).to(device)
 
-    ckpt = torch.load("checkpoints/solver_ep_25000.pt", map_location="cpu", weights_only=False)
+    ckpt = torch.load("checkpoints/solver_ep5000.pt", map_location="cpu", weights_only=False)
     model.load_state_dict(ckpt)
     model.eval()
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     for i in range(n_samples):
         obs, info = env.reset()
         comm_edges = info["comm_edges"]
-        goal_vec = env.agent_goal - env.agent_pos
+        goal_vec = (env.agent_goal - env.agent_pos).astype(np.float32) / np.array([grid_height, grid_width], dtype=np.float32)
         done = False
         step = 0
 
@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
             obs = new_obs
             comm_edges = info["comm_edges"]
-            goal_vec = env.agent_goal - env.agent_pos
+            goal_vec = (env.agent_goal - env.agent_pos).astype(np.float32) / np.array([grid_height, grid_width], dtype=np.float32)
 
             step += 1
 

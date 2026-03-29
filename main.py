@@ -11,6 +11,8 @@ from loss.A2C_loss import *
 from model.MAPF_solver import Solver
 from model.reward import reward_fn
 
+import pandas as pd
+
 if __name__ == "__main__":
     # Instance params
     grid_width = 10
@@ -20,7 +22,7 @@ if __name__ == "__main__":
     n_agents = 4
     observation_radius = 3
 
-    n_samples = 25_000
+    n_samples = 5000
     max_steps = grid_width * grid_height
 
     # Save dirs
@@ -94,6 +96,7 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
 
     reward_history = []
+    loss_history = []
 
     # reset log file at start
     with open(reward_log_path, "w", encoding="utf-8") as f:
@@ -104,7 +107,7 @@ if __name__ == "__main__":
     for i in pbar:
         obs, info = env.reset()
         comm_edges = info["comm_edges"]
-        goal_vec = env.agent_goal - env.agent_pos
+        goal_vec = (env.agent_goal - env.agent_pos).astype(np.float32) / np.array([grid_height, grid_width], dtype=np.float32)
         done = False
 
         episode_reward = 0.0
@@ -129,7 +132,7 @@ if __name__ == "__main__":
             )
 
             if buffer.is_full():
-                next_goal_vec = env.agent_goal - env.agent_pos
+                next_goal_vec = (env.agent_goal - env.agent_pos).astype(np.float32) / np.array([grid_height, grid_width], dtype=np.float32)
 
                 optimizer.zero_grad()
                 loss = A2C_loss(
@@ -163,24 +166,25 @@ if __name__ == "__main__":
                 entropy_weight=0.05,
                 gamma=0.99
             )
+
             loss.backward()
+            loss_history.append(loss.item())
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
             optimizer.step()
             buffer.reset()
 
         reward_history.append(episode_reward)
 
-        if i % 100 == 0:
-            avg_reward_100 = float(np.mean(reward_history[-100:]))
-
-            pbar.set_postfix({
-                "ep_reward": f"{episode_reward:.3f}",
-                "avg100": f"{avg_reward_100:.3f}"
-            })
-
-            with open(reward_log_path, "a", encoding="utf-8") as f:
-                f.write(f"{i},{episode_reward:.6f},{avg_reward_100:.6f}\n")
-
         if i % 1000 == 0:
-            ckpt_path = os.path.join(ckpt_dir, f"solver_ep_{i}.pt")
+            ckpt_path = os.path.join(ckpt_dir, f"solver_ep{i}.pt")
             torch.save(model.state_dict(), ckpt_path)
+            print(f"[Checkpoint] Saved model at episode {i}")
+
+    df = pd.DataFrame({
+        "rewards": reward_history,
+        "loss": loss_history
+    })
+
+    df.to_csv("data.csv", index=False)
+    
+        

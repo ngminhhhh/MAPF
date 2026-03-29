@@ -4,52 +4,61 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions import Categorical
 
-class CNNBlock(nn.Module):
-    def __init__(self, input_dim, output_dim, kernel_size):
-        super().__init__()
+class FeatureExtractor(nn.Module):
+    def __init__(self,  obs_channels : int, 
+                        obs_size     : int, 
+                        n_blocks     : int, 
+                        hidden_dims  : list[int], 
+                        kernel_sizes : list[int], 
+                        cnn_out_dim  : int, 
+                        goal_dim     :int, 
+                        gru_dim      :int
+                ):
 
-        self.block = nn.Sequential(
-            nn.Conv2d(input_dim, output_dim, kernel_size, padding=kernel_size//2),
-            nn.ReLU(),
-            nn.Conv2d(output_dim, output_dim, kernel_size, padding=kernel_size//2),
-            nn.ReLU()
-        )
-    
-    def forward(self, x):
-        return self.block(x)
-
-class GoalEncoder(nn.Module):
-    def __init__(self, in_dim=2, out_dim=4):
-        super().__init__()
-        self.encoder = nn.Sequential(
-            nn.Linear(in_dim, 8),
-            nn.ReLU(),
-            nn.Linear(8, out_dim)
-        )
-
-    def forward(self, x):
-        return self.encoder(x)
-
-class FeatureExtraction(nn.Module):
-    def __init__(self, obs_channels: int, hidden_dim: int, n_blocks: int, kernel_size: int, goal_dim:int):
         super().__init__()
 
         backbone = []
         in_dim = obs_channels
 
-        for _ in range(n_blocks):
-            backbone.append(CNNBlock(input_dim=in_dim, output_dim=hidden_dim, kernel_size=kernel_size))
-            in_dim = hidden_dim
+        for i in range(n_blocks):
+            backbone.append(nn.Conv2d(in_channels  = in_dim, 
+                                      out_channels = hidden_dims[i], 
+                                      kernel_size  = kernel_sizes[i], 
+                                      padding      = kernel_sizes[i]//2))
+            backbone.append(nn.ReLU())
+            in_dim = hidden_dims[i]
 
-        self.extractor = nn.Sequential(*backbone, nn.Flatten(start_dim=1))
-        self.goal_encoder = GoalEncoder(in_dim=2, out_dim=goal_dim)
+        flatten_dim = obs_size * obs_size * hidden_dims[-1]
 
-    def forward(self, x, goal_vecs):
-        obs_feats = self.extractor(x)
+        self.cnn_extractor = nn.Sequential(*backbone, 
+                                           nn.Flatten(start_dim=1), 
+                                           nn.Linear(flatten_dim, cnn_out_dim, False), 
+                                           nn.ReLU()
+                                        )
+
+        self.goal_encoder = nn.Sequential(nn.Linear(in_features=2, out_features=8),
+                                          nn.ReLU(),
+                                          nn.Linear(in_features=8, out_features=goal_dim),
+                                          nn.ReLU()
+                                        )
+
+        self.gru_extractor = nn.GRU(input_size   = cnn_out_dim+goal_dim, 
+                                    hidden_size  = gru_dim, 
+                                    num_layers   = 1,
+                                    batch_first  = True
+                                    )
+
+    def forward(self, obs, goal_vecs, h_prev):
+        obs_feats = self.cnn_extractor(obs)
         goal_feats = self.goal_encoder(goal_vecs)
-        feats = torch.cat([obs_feats, goal_feats], dim=-1)
 
-        return feats # (N, H * W * hidden_dim + goal_dim)
+        feats = torch.cat([obs_feats, goal_feats], dim=-1)
+        feats = feats.unsqueeze(1)
+        feats, h_next = self.gru_extractor(feats, h_prev)
+
+        feats = feats.squeeze(1)
+
+        return feats, h_next # (N, gru_dim)
 
 class GATHead(nn.Module):
     def __init__(self, in_dim:int, hidden_dim:int, out_dim:int):
@@ -143,18 +152,18 @@ class FeatureAggregator(nn.Module):
         return torch.cat(outs, dim=-1) # (N, out_dim * n_heads)
 
 class PolicyHead(nn.Module):
-    def __init__(self, in_dim, hidden_dim, n_mlp_layers):
+    def __init__(self, n_mlp_layers, in_dim, hidden_dims):
         super().__init__()
 
         backbone = []
-        for _ in range(n_mlp_layers):
-            backbone.append(nn.Linear(in_features=in_dim, out_features=hidden_dim, bias=False))
+        for i in range(n_mlp_layers):
+            backbone.append(nn.Linear(in_features=in_dim, out_features=hidden_dims[i], bias=False))
             backbone.append(nn.ReLU())
-            in_dim=hidden_dim
+            in_dim=hidden_dims[i]
         
         self.mlp = nn.Sequential(*backbone)
-        self.actor_head = nn.Linear(in_features=hidden_dim, out_features=5)
-        self.critic_head = nn.Linear(in_features=hidden_dim, out_features=1)
+        self.actor_head = nn.Linear(in_features=hidden_dims[-1], out_features=5)
+        self.critic_head = nn.Linear(in_features=hidden_dims[-1], out_features=1)
 
     def forward(self, x):
         x = self.mlp(x)
@@ -164,33 +173,67 @@ class PolicyHead(nn.Module):
         return logits, value
 
 class Solver(nn.Module):
-    def __init__(self, obs_width:int, obs_height:int, obs_channels: int, 
-                 cnn_hidden_dim: int, n_cnn_blocks:int, kernel_size: int, goal_out_dim:int,
-                 gat_hidden_dim:int, n_gat_heads:int,
-                 mlp_hidden_dim:int, n_mlp_layers:int
-                 ):
+    def __init__(self, obs_size: int, obs_channels: int, device):
         super().__init__()
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.obs_size = obs_size
+        self.obs_channels = obs_channels
+        self.device = device
 
-        self.feature_extractor = FeatureExtraction(obs_channels, cnn_hidden_dim, n_cnn_blocks, kernel_size, goal_out_dim)
+        # * Model hyperparameters
+        # convolution neuron network params
+        self.n_cnn_blocks = 3
+        self.cnn_hidden_dims = [32, 64, 128]
+        self.kernel_sizes = [7, 5, 3]
+        self.cnn_out_dim = 64
 
-        feats_out_dim = obs_width * obs_height * cnn_hidden_dim + goal_out_dim
+        # goal projection
+        self.goal_out_dim = 4
 
-        self.feature_aggregator = FeatureAggregator(in_dim=feats_out_dim, hidden_dim=gat_hidden_dim, n_heads=n_gat_heads)
+        # gru params
+        self.gru_dim = 64
 
-        self.head = PolicyHead(in_dim=gat_hidden_dim*n_gat_heads, hidden_dim=mlp_hidden_dim, n_mlp_layers=n_mlp_layers)
+        # graph attention network params
+        self.gat_hidden_dim = 128
+        self.n_gat_heads = 2
+
+        # policy head params
+        self.mlp_hidden_dim = [128, 64]
+        self.n_mlp_layers = 2
+
+        # * Model architecture
+        self.extractor = FeatureExtractor(obs_channels=obs_channels,
+                                          obs_size=obs_size,
+                                          n_blocks=self.n_cnn_blocks,
+                                          hidden_dims=self.cnn_hidden_dims,
+                                          kernel_sizes=self.kernel_sizes,
+                                          cnn_out_dim=self.cnn_out_dim,
+                                          goal_dim=self.goal_out_dim,
+                                          gru_dim=self.gru_dim)
+
+        self.aggregator = FeatureAggregator(in_dim=self.gru_dim, 
+                                            hidden_dim=self.gat_hidden_dim, 
+                                            n_heads=self.n_gat_heads)
+
+        self.head = PolicyHead(n_mlp_layers=self.n_mlp_layers, 
+                               hidden_dims=self.mlp_hidden_dim,
+                               in_dim=self.gat_hidden_dim*self.n_gat_heads)
+        
+        self.h_prev = None
+
+    def init_hidden_state(self, n_agents):
+        self.h_prev = torch.zeros(1, n_agents, self.gru_dim, device=self.device)
 
     def forward(self, obs, goal_vecs, edges):
         obs = torch.as_tensor(obs, dtype=torch.float32, device=self.device)
         goal_vecs = torch.as_tensor(goal_vecs, dtype=torch.float32, device=self.device)
         obs = obs.permute(0, 3, 1, 2).contiguous()
 
-        feats = self.feature_extractor(obs, goal_vecs)
-        feats = self.feature_aggregator(feats, edges)
+        feats, self.h_prev = self.extractor(obs, goal_vecs, self.h_prev)
+        feats = self.aggregator(feats, edges)
         logits, value = self.head(feats)
 
         return logits, value
-    
+
     @torch.no_grad()
     def act(self, obs, goal_vecs, edges, deterministic=False):
         logits, values = self.forward(obs, goal_vecs, edges)   
@@ -202,10 +245,8 @@ class Solver(nn.Module):
         else:
             actions = dist.sample()
 
-        log_probs = dist.log_prob(actions)
-
         values = values.squeeze(-1) # (N, )
 
         actions = actions.cpu().numpy()
 
-        return actions, log_probs, values
+        return actions, values
