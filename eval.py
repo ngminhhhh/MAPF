@@ -72,8 +72,8 @@ if __name__ == "__main__":
         n_mlp_layers=n_mlp_layers
     ).to(device)
 
-    ckpt = torch.load("checkpoints/solver_step_1000.pt", map_location="cpu", weights_only=False)
-    model.load_state_dict(ckpt["model_state_dict"])
+    ckpt = torch.load("checkpoints/solver_ep_25000.pt", map_location="cpu", weights_only=False)
+    model.load_state_dict(ckpt)
     model.eval()
 
     success_instances = 0
@@ -86,7 +86,8 @@ if __name__ == "__main__":
         step = 0
 
         while not done:
-            actions, log_probs, values = model.act(obs, goal_vec, comm_edges)
+            actions, logits, values = model.act(obs, goal_vec, comm_edges, deterministic=True)
+            print(logits)
 
             new_obs, rewards, terminated, truncated, info = env.step(actions)
 

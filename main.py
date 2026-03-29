@@ -6,11 +6,10 @@ from tqdm import tqdm
 from env.MAPF_env import *
 from utils.generator import *
 from utils.replayBuffer import *
-from loss.PPO_loss import train_step
+from loss.A2C_loss import *
 
 from model.MAPF_solver import Solver
 from model.reward import reward_fn
-
 
 if __name__ == "__main__":
     # Instance params
@@ -21,7 +20,7 @@ if __name__ == "__main__":
     n_agents = 4
     observation_radius = 3
 
-    n_samples = 10_000
+    n_samples = 25_000
     max_steps = grid_width * grid_height
 
     # Save dirs
@@ -29,6 +28,8 @@ if __name__ == "__main__":
     log_dir = "logs"
     os.makedirs(ckpt_dir, exist_ok=True)
     os.makedirs(log_dir, exist_ok=True)
+
+    reward_log_path = os.path.join(log_dir, "reward_log.txt")
 
     # Env + generator config
     env_cfg = MAPFEnvConfig(
@@ -53,7 +54,7 @@ if __name__ == "__main__":
     env = MAPFEnv(env_cfg=env_cfg, instance_generator=generator, reward_fn=reward_fn)
 
     buffer = ReplayBuffer(
-        capacity=256,
+        capacity=512,
         n_agents=n_agents,
         obs_size=(2 * observation_radius + 1),
         obs_channels=observation_channels
@@ -92,9 +93,11 @@ if __name__ == "__main__":
 
     optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
 
-    last_loss_value = np.nan
-    saved_loss_steps = []
-    saved_losses = []
+    reward_history = []
+
+    # reset log file at start
+    with open(reward_log_path, "w", encoding="utf-8") as f:
+        f.write("episode,episode_reward,avg_reward_100\n")
 
     pbar = tqdm(range(1, n_samples + 1), desc="Training", unit="episode")
 
@@ -104,15 +107,15 @@ if __name__ == "__main__":
         goal_vec = env.agent_goal - env.agent_pos
         done = False
 
-        episode_reward_sum = 0.0
+        episode_reward = 0.0
 
         while not done:
             actions, log_probs, values = model.act(obs, goal_vec, comm_edges)
 
             new_obs, rewards, terminated, truncated, info = env.step(actions)
-            episode_reward_sum += float(np.mean(rewards))
-
             done = terminated or truncated
+
+            episode_reward += float(np.mean(rewards))
 
             buffer.push(
                 state=obs,
@@ -128,21 +131,20 @@ if __name__ == "__main__":
             if buffer.is_full():
                 next_goal_vec = env.agent_goal - env.agent_pos
 
-                last_loss_value = train_step(
+                optimizer.zero_grad()
+                loss = A2C_loss(
                     model=model,
-                    optimizer=optimizer,
                     buffer=buffer,
                     next_state=new_obs,
                     next_goal_vec=next_goal_vec,
                     next_edges=info["comm_edges"],
-                    gamma=0.99,
-                    lam=0.95,
-                    clip_eps=0.2,
-                    value_coef=0.5,
-                    entropy_coef=0.01,
-                    n_epochs=4
+                    critic_weight=0.5,
+                    entropy_weight=0.05,
+                    gamma=0.99
                 )
-
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
+                optimizer.step()
                 buffer.reset()
 
             obs = new_obs
@@ -150,56 +152,35 @@ if __name__ == "__main__":
             goal_vec = env.agent_goal - env.agent_pos
 
         if buffer.size > 0:
-            last_loss_value = train_step(
+            optimizer.zero_grad()
+            loss = A2C_loss(
                 model=model,
-                optimizer=optimizer,
                 buffer=buffer,
                 next_state=None,
                 next_goal_vec=None,
                 next_edges=None,
-                gamma=0.99,
-                lam=0.95,
-                clip_eps=0.2,
-                value_coef=0.5,
-                entropy_coef=0.01,
-                n_epochs=4
+                critic_weight=0.5,
+                entropy_weight=0.05,
+                gamma=0.99
             )
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
+            optimizer.step()
             buffer.reset()
 
-        # Update progress bar info
-        pbar.set_postfix({
-            "last_loss": f"{last_loss_value:.4f}" if not np.isnan(last_loss_value) else "nan",
-            "ep_rew_mean": f"{episode_reward_sum:.4f}"
-        })
-
-        if i % 500 == 0:
-            ckpt_path = os.path.join(ckpt_dir, f"solver_step_{i}.pt")
-            torch.save({
-                "sample_idx": i,
-                "model_state_dict": model.state_dict(),
-                "optimizer_state_dict": optimizer.state_dict(),
-                "last_loss": last_loss_value,
-                "env_cfg": env_cfg,
-                "generator_cfg": generator_cfg,
-                "model_hparams": {
-                    "obs_width": 2 * observation_radius + 1,
-                    "obs_height": 2 * observation_radius + 1,
-                    "obs_channels": observation_channels,
-                    "cnn_hidden_dim": cnn_hidden_dim,
-                    "n_cnn_blocks": n_cnn_blocks,
-                    "kernel_size": kernel_size,
-                    "goal_out_dim": goal_out_dim,
-                    "gat_hidden_dim": gat_hidden_dim,
-                    "n_gat_heads": n_gat_heads,
-                    "mlp_hidden_dim": mlp_hidden_dim,
-                    "n_mlp_layers": n_mlp_layers,
-                }
-            }, ckpt_path)
-
+        reward_history.append(episode_reward)
 
         if i % 100 == 0:
-            saved_loss_steps.append(i)
-            saved_losses.append(last_loss_value)
+            avg_reward_100 = float(np.mean(reward_history[-100:]))
 
-            np.save(os.path.join(log_dir, "loss_steps.npy"), np.array(saved_loss_steps, dtype=np.int32))
-            np.save(os.path.join(log_dir, "last_losses.npy"), np.array(saved_losses, dtype=np.float32))
+            pbar.set_postfix({
+                "ep_reward": f"{episode_reward:.3f}",
+                "avg100": f"{avg_reward_100:.3f}"
+            })
+
+            with open(reward_log_path, "a", encoding="utf-8") as f:
+                f.write(f"{i},{episode_reward:.6f},{avg_reward_100:.6f}\n")
+
+        if i % 1000 == 0:
+            ckpt_path = os.path.join(ckpt_dir, f"solver_ep_{i}.pt")
+            torch.save(model.state_dict(), ckpt_path)
