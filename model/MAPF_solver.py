@@ -1,32 +1,45 @@
+from pathlib import Path
+
 import torch 
 import torch.nn as nn
 
 import torch.nn.functional as F
+import yaml
 from torch.distributions import Categorical
 
+
+MODEL_CONFIG_PATH = Path(__file__).resolve().parents[1] / "configs" / "model.yaml"
+
+
+def load_model_config(config_path=MODEL_CONFIG_PATH):
+    with Path(config_path).open("r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
+
+
 class FeatureExtractor(nn.Module):
-    def __init__(self,  obs_channels : int, 
-                        obs_size     : int, 
-                        n_blocks     : int, 
-                        hidden_dims  : list[int], 
-                        kernel_sizes : list[int], 
-                        cnn_out_dim  : int, 
-                        goal_dim     :int, 
-                        gru_dim      :int
-                ):
+    def __init__(
+        self,
+        obs_channels: int,
+        obs_size: int,
+        hidden_dims: list[int],
+        kernel_sizes: list[int],
+        cnn_out_dim: int,
+        goal_dim: int,
+        gru_dim: int,
+    ):
 
         super().__init__()
 
         backbone = []
         in_dim = obs_channels
 
-        for i in range(n_blocks):
+        for out_dim, kernel_size in zip(hidden_dims, kernel_sizes):
             backbone.append(nn.Conv2d(in_channels  = in_dim, 
-                                      out_channels = hidden_dims[i], 
-                                      kernel_size  = kernel_sizes[i], 
-                                      padding      = kernel_sizes[i]//2))
+                                      out_channels = out_dim, 
+                                      kernel_size  = kernel_size, 
+                                      padding      = kernel_size//2))
             backbone.append(nn.ReLU())
-            in_dim = hidden_dims[i]
+            in_dim = out_dim
 
         flatten_dim = obs_size * obs_size * hidden_dims[-1]
 
@@ -152,14 +165,14 @@ class FeatureAggregator(nn.Module):
         return torch.cat(outs, dim=-1) # (N, out_dim * n_heads)
 
 class PolicyHead(nn.Module):
-    def __init__(self, n_mlp_layers, in_dim, hidden_dims):
+    def __init__(self, in_dim, hidden_dims):
         super().__init__()
 
         backbone = []
-        for i in range(n_mlp_layers):
-            backbone.append(nn.Linear(in_features=in_dim, out_features=hidden_dims[i], bias=False))
+        for hidden_dim in hidden_dims:
+            backbone.append(nn.Linear(in_features=in_dim, out_features=hidden_dim, bias=False))
             backbone.append(nn.ReLU())
-            in_dim=hidden_dims[i]
+            in_dim = hidden_dim
         
         self.mlp = nn.Sequential(*backbone)
         self.actor_head = nn.Linear(in_features=hidden_dims[-1], out_features=5)
@@ -173,37 +186,31 @@ class PolicyHead(nn.Module):
         return logits, value
 
 class Solver(nn.Module):
-    def __init__(self, obs_size: int, obs_channels: int, device):
+    def __init__(self, obs_size: int, obs_channels: int, device, config_path=MODEL_CONFIG_PATH):
         super().__init__()
         self.obs_size = obs_size
         self.obs_channels = obs_channels
         self.device = device
+        cfg = load_model_config(config_path)
 
-        # * Model hyperparameters
-        # convolution neuron network params
-        self.n_cnn_blocks = 3
-        self.cnn_hidden_dims = [32, 64, 128]
-        self.kernel_sizes = [7, 5, 3]
-        self.cnn_out_dim = 64
+        extractor_cfg = cfg["feature_extractor"]
+        aggregator_cfg = cfg["graph_attention"]
+        policy_cfg = cfg["policy_head"]
 
-        # goal projection
-        self.goal_out_dim = 4
+        self.cnn_hidden_dims = extractor_cfg["cnn_hidden_dims"]
+        self.kernel_sizes = extractor_cfg["kernel_sizes"]
+        self.cnn_out_dim = extractor_cfg["cnn_out_dim"]
+        self.goal_out_dim = extractor_cfg["goal_out_dim"]
+        self.gru_dim = extractor_cfg["gru_dim"]
 
-        # gru params
-        self.gru_dim = 64
+        self.gat_hidden_dim = aggregator_cfg["hidden_dim"]
+        self.n_gat_heads = aggregator_cfg["n_heads"]
 
-        # graph attention network params
-        self.gat_hidden_dim = 128
-        self.n_gat_heads = 2
-
-        # policy head params
-        self.mlp_hidden_dim = [128, 64]
-        self.n_mlp_layers = 2
+        self.mlp_hidden_dim = policy_cfg["hidden_dims"]
 
         # * Model architecture
         self.extractor = FeatureExtractor(obs_channels=obs_channels,
                                           obs_size=obs_size,
-                                          n_blocks=self.n_cnn_blocks,
                                           hidden_dims=self.cnn_hidden_dims,
                                           kernel_sizes=self.kernel_sizes,
                                           cnn_out_dim=self.cnn_out_dim,
@@ -214,8 +221,7 @@ class Solver(nn.Module):
                                             hidden_dim=self.gat_hidden_dim, 
                                             n_heads=self.n_gat_heads)
 
-        self.head = PolicyHead(n_mlp_layers=self.n_mlp_layers, 
-                               hidden_dims=self.mlp_hidden_dim,
+        self.head = PolicyHead(hidden_dims=self.mlp_hidden_dim,
                                in_dim=self.gat_hidden_dim*self.n_gat_heads)
         
         self.h_prev = None

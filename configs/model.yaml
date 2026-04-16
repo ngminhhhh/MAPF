@@ -1,0 +1,13 @@
+feature_extractor:
+    cnn_hidden_dims: [32, 64, 128]
+    kernel_sizes: [7, 5, 3]
+    cnn_out_dim: 64
+    goal_out_dim: 4
+    gru_dim: 64
+
+graph_attention:
+    hidden_dim: 128
+    n_heads: 2
+
+policy_head:
+    hidden_dims: [128, 64]
