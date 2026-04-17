@@ -121,7 +121,7 @@ class GATHead(nn.Module):
         '''
         device = x.device
         N = x.size(0)
-        edges = torch.from_numpy(edges).to(device=device, dtype=torch.long) # convert to torch
+        edges = torch.as_tensor(edges, device=device, dtype=torch.long)
 
         src = edges[:, 0] # (E, )
         dst = edges[:, 1] # (E, )
@@ -186,13 +186,14 @@ class PolicyHead(nn.Module):
         return logits, value
 
 class Solver(nn.Module):
-    def __init__(self, obs_size: int, obs_channels: int, device, config_path=MODEL_CONFIG_PATH):
+    def __init__(self, obs_size: int, device, config_path=MODEL_CONFIG_PATH):
         super().__init__()
         self.obs_size = obs_size
-        self.obs_channels = obs_channels
         self.device = device
         cfg = load_model_config(config_path)
 
+        self.obs_channels = cfg["obs_channels"]
+        
         extractor_cfg = cfg["feature_extractor"]
         aggregator_cfg = cfg["graph_attention"]
         policy_cfg = cfg["policy_head"]
@@ -209,7 +210,7 @@ class Solver(nn.Module):
         self.mlp_hidden_dim = policy_cfg["hidden_dims"]
 
         # * Model architecture
-        self.extractor = FeatureExtractor(obs_channels=obs_channels,
+        self.extractor = FeatureExtractor(obs_channels=self.obs_channels,
                                           obs_size=obs_size,
                                           hidden_dims=self.cnn_hidden_dims,
                                           kernel_sizes=self.kernel_sizes,
@@ -223,26 +224,24 @@ class Solver(nn.Module):
 
         self.head = PolicyHead(hidden_dims=self.mlp_hidden_dim,
                                in_dim=self.gat_hidden_dim*self.n_gat_heads)
-        
-        self.h_prev = None
 
-    def init_hidden_state(self, n_agents):
-        self.h_prev = torch.zeros(1, n_agents, self.gru_dim, device=self.device)
+    def init_hidden_state(self, n_agents: int):
+        return torch.zeros(1, n_agents, self.gru_dim, device=self.device)
 
-    def forward(self, obs, goal_vecs, edges):
+    def forward(self, obs, goal_vecs, edges, h_prev):
         obs = torch.as_tensor(obs, dtype=torch.float32, device=self.device)
         goal_vecs = torch.as_tensor(goal_vecs, dtype=torch.float32, device=self.device)
         obs = obs.permute(0, 3, 1, 2).contiguous()
 
-        feats, self.h_prev = self.extractor(obs, goal_vecs, self.h_prev)
+        feats, h_next = self.extractor(obs, goal_vecs, h_prev)
         feats = self.aggregator(feats, edges)
         logits, value = self.head(feats)
 
-        return logits, value
+        return logits, value, h_next
 
     @torch.no_grad()
-    def act(self, obs, goal_vecs, edges, deterministic=False):
-        logits, values = self.forward(obs, goal_vecs, edges)   
+    def act(self, obs, goal_vecs, edges, h_prev, deterministic=False):
+        logits, values, h_next = self.forward(obs, goal_vecs, edges, h_prev)
 
         dist = Categorical(logits=logits)
 
@@ -255,4 +254,4 @@ class Solver(nn.Module):
 
         actions = actions.cpu().numpy()
 
-        return actions, values
+        return actions, values, h_next

@@ -7,7 +7,7 @@ from collections import deque
 class MAPFGenerator:
     def __init__(self, cfg: MAPFGeneratorConfig):
         self.cfg = cfg
-        self.instance_idx = 0
+        self.rng = np.random.RandomState(cfg.seed)
 
     def _is_grid_connected(self, grid: np.ndarray) -> bool:
         H, W = grid.shape
@@ -36,9 +36,8 @@ class MAPFGenerator:
 
         return visited_count == empty_cells.shape[0]
     
-    def generate_instance(self) -> MAPFInstance:
-        rng = np.random.RandomState(self.cfg.seed + self.instance_idx)
-        self.instance_idx += 1
+    def generate_instance(self, is_check_connected: bool = False) -> MAPFInstance:
+        rng = self.rng
 
         H, W = self.cfg.height, self.cfg.width
         n_agents = self.cfg.n_agents
@@ -50,7 +49,7 @@ class MAPFGenerator:
             obs_idx = rng.choice(n_cells, size=n_obs, replace=False)
             grid.reshape(-1)[obs_idx] = 1
 
-            if not self._is_grid_connected(grid):
+            if is_check_connected and not self._is_grid_connected(grid):
                 continue
 
             empty_cells = np.argwhere(grid == 0)
@@ -61,12 +60,4 @@ class MAPFGenerator:
 
             return MAPFInstance(grid=grid, starts=starts, goals=goals)
     
-    def generate_instances(self, n_samples) -> list[MAPFInstance]:
-        instances = []
-        for _ in tqdm(range(n_samples), desc="Generating MAPF instances"):
-            instances.append(self.next_instance())
-            
-        return instances
-    
-
 

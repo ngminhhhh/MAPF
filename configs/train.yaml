@@ -1,0 +1,3 @@
+learning_rate: 1.0e-3
+base_train_seed: 100000
+train_samples: 10000

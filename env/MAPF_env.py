@@ -224,7 +224,13 @@ class MAPFEnv(gym.Env):
         # * Instance info 
         self.step_count = 0
 
-    def reset(self, *, seed: int|None = None, options: dict|None = None):
+    def reset(
+        self,
+        *,
+        seed: int | None = None,
+        options: dict | None = None,
+        ep: dict | None = None,
+    ):
         '''
             @return:
                 obs: first observation of each agents in instance
@@ -233,13 +239,19 @@ class MAPFEnv(gym.Env):
         super().reset(seed=seed)
 
         # * Get new instance 
-        instance = self.instance_generator.generate_instance()
-        self.instances_idx += 1
+        if ep is not None:
+            self.grid = np.array(ep["grid"], copy=True)
+            self.agent_pos = np.array(ep["agent_start"], copy=True)
+            self.agent_goal = np.array(ep["agent_goal"], copy=True)
+            self.instances_idx = ep["instances_idx"]
+        else:
+            instance = self.instance_generator.generate_instance()
+            self.instances_idx += 1
 
-        # * Config new instance
-        self.grid = instance.grid
-        self.agent_pos = instance.starts.copy()
-        self.agent_goal = instance.goals
+            self.grid = instance.grid
+            self.agent_pos = instance.starts.copy()
+            self.agent_goal = instance.goals
+
         self.step_count = 0
         self.comm_graph = self._build_communication_graph()
         self.stagnation_count.fill(0)

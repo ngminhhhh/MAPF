@@ -21,5 +21,4 @@ class MAPFGeneratorConfig:
     height: int 
     n_agents: int 
     obstacle_ratio: float 
-    n_samples: int
     seed: int 
